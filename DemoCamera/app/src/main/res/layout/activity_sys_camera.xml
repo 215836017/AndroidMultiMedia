@@ -8,11 +8,19 @@
     tools:context=".systemAPI.SysCameraActivity">
 
     <Button
-        android:id="@+id/sys_camera_activity_btn"
+        android:id="@+id/sys_camera_activity_btn_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="call system camera APP to take photo" />
+
+    <Button
+        android:id="@+id/sys_camera_activity_btn_video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Call Systent Camera APP" />
+        android:text="call system camera APP to record video" />
 
     <TextView
         android:id="@+id/sys_camera_activity_text"

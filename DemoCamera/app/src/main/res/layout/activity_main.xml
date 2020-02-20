@@ -18,21 +18,21 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:onClick="btnClick"
-            android:text="System Camera" />
+            android:text="Call System Camera APP" />
 
         <Button
             android:id="@+id/main_activity_btn_old_cmaera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Old Camera" />
+            android:text="Use Old Camera API" />
 
         <Button
             android:id="@+id/main_activity_btn_new_camera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="New Camera" />
+            android:text="Use New Camera API" />
     </LinearLayout>
 
 </RelativeLayout>

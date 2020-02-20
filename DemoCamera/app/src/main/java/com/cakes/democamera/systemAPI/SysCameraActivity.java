@@ -1,23 +1,24 @@
 package com.cakes.democamera.systemAPI;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.cakes.democamera.R;
 import com.cakes.democamera.utils.LogUtil;
 
 import java.io.File;
+import java.io.IOException;
 
 public class SysCameraActivity extends AppCompatActivity {
 
@@ -26,7 +27,8 @@ public class SysCameraActivity extends AppCompatActivity {
     private TextView textView;
     private ImageView imageView;
 
-    private final int REQUEST_CODE_RECORD_VIDEO = 1;
+    private final int REQUEST_CODE_TAKE_PHOTO = 100;
+    private final int REQUEST_CODE_RECORD_VIDEO = 101;
 
 
     @Override
@@ -36,10 +38,17 @@ public class SysCameraActivity extends AppCompatActivity {
 
         textView = findViewById(R.id.sys_camera_activity_text);
         imageView = findViewById(R.id.sys_camera_activity_image);
-        findViewById(R.id.sys_camera_activity_btn).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.sys_camera_activity_btn_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callSysCameraAPP();
+                callSysCameraAppToTakePhoto();
+            }
+        });
+
+        findViewById(R.id.sys_camera_activity_btn_video).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callSysCameraAppToRecordVideo();
             }
         });
     }
@@ -47,13 +56,23 @@ public class SysCameraActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        LogUtil.d(TAG, "onActivityResult() --- 111111111");
-        if (resultCode == RESULT_OK && null != data) {
-            if (requestCode == REQUEST_CODE_RECORD_VIDEO) {
-                LogUtil.d(TAG, "onActivityResult() --- 2222222222");
-//                Uri uri = data.getData();          // 视频的保存路径
-//                textView.setText(uri.toString());
+        LogUtil.d(TAG, "onActivityResult() --- 111111111, requestCode = " + requestCode
+                + ", resultCode = " + resultCode);
 
+        if (null == data) {
+            /* 如果在调用startActivityForResult()之前设置照片的路径，那么这里返回的data为空，
+             获取拍照的数据就要设置的文件中读取。*/
+            LogUtil.e(TAG, "onActivityResult() --- error: 1111111");
+        }
+        if (resultCode == RESULT_OK && null != data) {
+            if (requestCode == REQUEST_CODE_TAKE_PHOTO) {
+                LogUtil.d(TAG, "onActivityResult() --- 2222222222");
+                Uri uri = data.getData();          // 视频的保存路径
+                if (null != uri) {
+                    textView.setText(uri.toString());
+                } else {
+                    LogUtil.e(TAG, "onActivityResult() --- error: 22222");
+                }
                 /*缩略图信息是储存在返回的intent中的Bundle中的，
                  * 对应Bundle中的键为data，因此从Intent中取出
                  * Bundle再根据data取出来Bitmap即可*/
@@ -63,29 +82,98 @@ public class SysCameraActivity extends AppCompatActivity {
                 LogUtil.d(TAG, "onActivityResult() ---  bitmap.getWidth = " + bitmap.getWidth()
                         + " bitmap.getHeight = " + bitmap.getHeight());
                 imageView.setImageBitmap(bitmap);
+
+            } else if (requestCode == REQUEST_CODE_RECORD_VIDEO) {
+                Uri uri = data.getData();          // 视频的保存路径
+                if (null != uri) {
+                    textView.setText(uri.toString());
+                } else {
+                    LogUtil.e(TAG, "onActivityResult() --- error: 444444444");
+                }
+
+                // 不设置保存路径的情况下，data.getExtras()在有些机型中返回的是null；而在有些机型中extras.get("data")返回的是null
+//                Bundle extras = data.getExtras();
+//                Object oc = extras.get("data");
+//                if (null == oc) {
+//                    LogUtil.e(TAG, "onActivityResult() --- error: 555555");
+//                } else {
+//                    LogUtil.i(TAG, "onActivityResult() --- 44444444444");
+//                }
+            }
+        } else {
+            LogUtil.e(TAG, "onActivityResult() --- error: 333333333333");
+        }
+    }
+
+    private void callSysCameraAppToTakePhoto() {
+        // 拍照
+        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/aDemoCamera/testSys.jpg";
+        File imageFile = createImageFile(filePath);
+        Uri imageUri = null;
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  // 表示跳转至相机的录视频界面
+        if (intent.resolveActivity(getPackageManager()) != null) {//这句作用是如果没有相机则该应用不会闪退，要是不加这句则当系统没有相机应用的时候该应用会闪退
+
+            if (null != imageFile) {
+                /*7.0以下则直接使用Uri的fromFile方法将File转化为Uri*/
+                imageUri = Uri.fromFile(imageFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);    // 表示录制完后保存的录制，如果不写，则会保存到默认的路径，在onActivityResult()的回调，通过intent.getData中返回保存的路径
+
+                startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);//启动相机
+            } else {
+                LogUtil.e(TAG, "callSysCameraAppToTakePhoto() -- error: 222222222");
+            }
+        } else {
+            LogUtil.e(TAG, "callSysCameraAppToTakePhoto() -- error: 1111111");
+        }
+    }
+
+    private void callSysCameraAppToRecordVideo() {
+        // 录像
+        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/aDemoCamera/testSys.mp4";
+        File videoFile = createImageFile(filePath);
+        Uri videoUri = null;
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);  // 表示跳转至相机的录视频界面
+        if (intent.resolveActivity(getPackageManager()) != null) {//这句作用是如果没有相机则该应用不会闪退，要是不加这句则当系统没有相机应用的时候该应用会闪退
+            if (null != videoFile) {
+                /*7.0以下则直接使用Uri的fromFile方法将File转化为Uri*/
+                videoUri = Uri.fromFile(videoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);    // 表示录制完后保存的录制，如果不写，则会保存到默认的路径，在onActivityResult()的回调，通过intent.getData中返回保存的路径
+                intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10);   // 设置视频录制的最长时间
+                intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);    // MediaStore.EXTRA_VIDEO_QUALITY 表示录制视频的质量，从 0-1，越大表示质量越好，同时视频也越大
+
+                startActivityForResult(intent, REQUEST_CODE_RECORD_VIDEO);//启动相机
+            } else {
+                LogUtil.e(TAG, "callSysCameraAppToRecordVideo() -- error: 222222222");
             }
         }
     }
 
-    private void callSysCameraAPP() {
-        // 拍照
-        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/aDemoCamera/testSys.png";
+    /**
+     * 创建用来存储图片的文件，以时间来命名就不会产生命名冲突
+     *
+     * @return 创建的图片文件
+     */
+    private File createImageFile(String filePath) {
 
-        Uri uri = Uri.fromFile(new File(filePath));   // 将路径转换为Uri对象  android 5以上的系统不兼容
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  // 表示跳转至相机的录视频界面
-
-        // 录像
-//        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DemoCamera/testSys.mp4";
-//        Uri uri = Uri.fromFile(new File(filePath));   // 将路径转换为Uri对象
-//        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);  // 表示跳转至相机的录视频界面
-//        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30);   // 设置视频录制的最长时间
-//        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);    // MediaStore.EXTRA_VIDEO_QUALITY 表示录制视频的质量，从 0-1，越大表示质量越好，同时视频也越大
-
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);    // 表示录制完后保存的录制，如果不写，则会保存到默认的路径，在onActivityResult()的回调，通过intent.getData中返回保存的路径
-
-        if (intent.resolveActivity(getPackageManager()) != null) {//这句作用是如果没有相机则该应用不会闪退，要是不加这句则当系统没有相机应用的时候该应用会闪退
-            startActivityForResult(intent, REQUEST_CODE_RECORD_VIDEO);//启动相机
+        if (TextUtils.isEmpty(filePath)) {
+            return null;
         }
+        File file = new File(filePath);
+        File dirFile = file.getParentFile();
+        if (null != dirFile) {
+            if (!dirFile.exists()) {
+                dirFile.mkdirs();
+            }
+        }
+
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            file = null;
+        }
+
+        return file;
     }
 
 }
