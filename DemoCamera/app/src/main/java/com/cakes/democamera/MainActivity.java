@@ -1,24 +1,17 @@
 package com.cakes.democamera;
 
+import android.Manifest;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.view.View;
-
 import com.cakes.democamera.systemAPI.SysCameraActivity;
 import com.cakes.democamera.utils.LogUtil;
-
-import java.io.File;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
