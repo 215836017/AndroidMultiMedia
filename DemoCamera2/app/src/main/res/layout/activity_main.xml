@@ -13,6 +13,14 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:onClick="btnClick"
-        android:text="test 01" />
+        android:text="拍照" />
+
+    <Button
+        android:id="@+id/main_test_02"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:onClick="btnClick"
+        android:text="录像" />
 
 </LinearLayout>

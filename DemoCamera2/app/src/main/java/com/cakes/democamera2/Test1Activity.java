@@ -22,7 +22,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
@@ -34,15 +33,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-// https://www.cnblogs.com/guanxinjing/p/10940049.html
-
-// https://www.cnblogs.com/guanxinjing/p/11009192.html
-// https://cloud.tencent.com/developer/article/1650043
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Test1Activity extends AppCompatActivity {
