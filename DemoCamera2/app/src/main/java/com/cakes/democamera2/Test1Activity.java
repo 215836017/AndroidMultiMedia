@@ -26,11 +26,9 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +36,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class Test1Activity extends AppCompatActivity {
+public class Test1Activity extends BaseActivity {
 
     private final String TAG = "Test1Activity";
 
@@ -269,15 +267,14 @@ public class Test1Activity extends AppCompatActivity {
 
     private void selectCamera() {
         if (null == cameraManager) {
-            showToast("null = CameraManager");
+            showToast(TAG, "null = CameraManager");
             return;
         }
-
 
         try {
             String[] cameraIdList = cameraManager.getCameraIdList();
             if (null == cameraIdList || cameraIdList.length <= 0) {
-                showToast("cameraIdList is empty...");
+                showToast(TAG, "cameraIdList is empty...");
                 return;
             }
 
@@ -300,7 +297,7 @@ public class Test1Activity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void openCamera() {
         if (TextUtils.isEmpty(mCameraId)) {
-            showToast("没有找到后置相机");
+            showToast(TAG, "没有找到后置相机");
             return;
         }
 
@@ -383,10 +380,6 @@ public class Test1Activity extends AppCompatActivity {
         return selectSize;
     }
 
-    private void showToast(String msg) {
-        LogUtil.i(TAG, "showToast() -- msg = " + msg);
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
 
     private TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
@@ -416,7 +409,7 @@ public class Test1Activity extends AppCompatActivity {
     private CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
-            showToast("相机打开成功");
+            showToast(TAG, "相机打开成功");
 
             doForOpenCamera(camera);
         }

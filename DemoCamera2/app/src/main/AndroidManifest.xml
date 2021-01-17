@@ -17,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DemoCamera2">
+        <activity android:name=".Test3Activity"></activity>
         <activity android:name=".Test2Activity" />
         <activity android:name=".Test1Activity" />
         <activity android:name=".MainActivity">

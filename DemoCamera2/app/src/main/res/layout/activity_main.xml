@@ -23,4 +23,12 @@
         android:onClick="btnClick"
         android:text="录像" />
 
+    <Button
+        android:id="@+id/main_test_03"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:onClick="btnClick"
+        android:text="保存 or 编码H264" />
+
 </LinearLayout>

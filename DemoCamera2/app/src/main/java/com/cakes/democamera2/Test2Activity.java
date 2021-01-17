@@ -1,9 +1,5 @@
 package com.cakes.democamera2;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -30,7 +26,9 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.cakes.democamera2.video.MediaRecorderManager;
 import com.cakes.democamera2.video.OnVideoRecordListener;
@@ -40,7 +38,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class Test2Activity extends AppCompatActivity {
+public class Test2Activity extends BaseActivity {
 
     private final String TAG = "Test2Activity";
 
@@ -49,7 +47,6 @@ public class Test2Activity extends AppCompatActivity {
 
     private HandlerThread cameraThread;
     private Handler cameraHandler;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +111,7 @@ public class Test2Activity extends AppCompatActivity {
         }
 
         if (null == cameraCaptureSession) {
-            showToast("null == cameraCaptureSession");
+            showToast(TAG, "null == cameraCaptureSession");
             return;
         }
 
@@ -168,7 +165,7 @@ public class Test2Activity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    showToast("时间到了，录像结束");
+                    showToast(TAG, "时间到了，录像结束");
                     stopRecord();
                 }
             });
@@ -230,7 +227,7 @@ public class Test2Activity extends AppCompatActivity {
         try {
             String[] cameraIdList = cameraManager.getCameraIdList();
             if (null == cameraIdList || cameraIdList.length <= 0) {
-                showToast("not found an camera...");
+                showToast(TAG, "not found an camera...");
                 return;
             }
 
@@ -299,7 +296,7 @@ public class Test2Activity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void openCamera() {
         if (TextUtils.isEmpty(cameraId)) {
-            showToast("cameraId is null");
+            showToast(TAG, "cameraId is null");
             return;
         }
 
@@ -314,7 +311,7 @@ public class Test2Activity extends AppCompatActivity {
     private CameraDevice.StateCallback openCameraStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
-            showToast("相机打开成功");
+            showToast(TAG, "相机打开成功");
             cameraDevice = camera;
             startPreview();
         }
@@ -475,9 +472,4 @@ public class Test2Activity extends AppCompatActivity {
         }
     };
 
-
-    private void showToast(String msg) {
-        LogUtil.i(TAG, "showToast() -- msg = " + msg);
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
 }

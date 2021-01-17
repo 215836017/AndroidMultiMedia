@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (view.getId() == R.id.main_test_02) {
             startActivity(new Intent(this, Test2Activity.class));
+
+        } else if (view.getId() == R.id.main_test_03) {
+            startActivity(new Intent(this, Test3Activity.class));
         }
     }
 }
