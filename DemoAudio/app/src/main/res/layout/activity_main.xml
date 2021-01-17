@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/main_act_btn_sys_record"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:onClick="btnClick"
+            android:text="Use System Recorder" />
+
+        <Button
+            android:id="@+id/main_act_btn_audio_record"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:onClick="btnClick"
+            android:text="AudioRecord" />
+
+        <Button
+            android:id="@+id/main_act_btn_media_recorder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:onClick="btnClick"
+            android:text="MediaRecorder" />
+
+        <Button
+            android:id="@+id/main_act_btn_sound_pool"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:onClick="btnClick"
+            android:text="SoundPool" />
+
+        <Button
+            android:id="@+id/main_act_btn_media_player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:onClick="btnClick"
+            android:text="MediaPlayer" />
+
+        <Button
+            android:id="@+id/main_act_btn_audio_track"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:onClick="btnClick"
+            android:text="AudioTrack" />
+
+        <Button
+            android:id="@+id/main_act_btn_ringtone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:onClick="btnClick"
+            android:text="Ringtone" />
+    </LinearLayout>
+</ScrollView>

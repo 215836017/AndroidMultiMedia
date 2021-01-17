@@ -1,0 +1,54 @@
+录音相关文章：
+https://blog.csdn.net/chuyangchangxi/article/details/91383932
+
+一、AudioRecord
+使用AudioRecord的类。AudioRecord是三个方法中最灵活的（由于他同意訪问原始音频流），可是他是拥有最少的内置功能。如不会自己主动压缩音频等等。
+ 使用AudioRecord的基础知识很easy。我们仅仅须要构造一个AudioRecord类型的对象，并传入各种不同配置參数。
+ 须要制定的第一个值就是音频源。以下使用值与之前用于MediaRecorder的值同样，其在MediaRecorder.AudioSource 中定义。实际上。这意味着能够使用MediaRecorder.AudioSource.MIC;
+ int audiosource = MediaRecorder.AudioSource.MIC;
+ 须要指定的下一个值是录制的採样率，应以赫兹为单位，我们知道。MediaRecorder採样的音频是8000赫兹。
+ 而CD质量的音频一般是44100赫兹（44100Hz）。Hz或赫兹是每秒的样本数量。
+ 不同的Android手机硬件将可以以不同的採样率进行採样。对于我的这个样例将以11025Hz的採样率来进行採样，这是一个经常使用的採样率。
+ int sampleRateInHz = 11025;
+ 接下来，须要指定捕获的音频通道的数量，在AudioFormat类中指定了用于此參数的常量。并且可依据名称理解他们。
+ 比如使用单声道配置: int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+ 随后。须要指定音频格式。在AudioFormat类中也指定了一下各种可能的常量。
+ 这四个选择中，我们选择PCM_16位和PCM 8位。 PCM代表脉冲编码调制（Pulse Code Modulation） 他实际上是原始的音频样本。
+  因此能够设置每一个样本的分辨率为16位或8位。16位将占用很多其它的控件和处理能力，但表示的音频将更接近真实。
+ int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+  最后将须要指定缓冲区大小。实际上能够查询AudioRecord类以获得最小缓冲区大小。查询方式是调用getMinBufferSize的静态方法，同一时候传入採样率，通道配置以及音频格式。
+int bufferSizeInBytes = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
+
+  参考链接：
+  https://www.cnblogs.com/renhui/p/7457321.html
+ Android AudioRecord录制wav格式的音频: https://blog.csdn.net/chezi008/article/details/53064604
+
+
+ 二、MediaRecorder：
+     MediaRecorder 类可用于音频和视频的捕获。录制的音频文件是经过压缩后的，需要设置编码器。并且录制的音频文件可以用系统自带
+ 的Music播放器播放。MediaRecorder已经集成了录音、编码、压缩等，并支持少量的录音音频格式，但是这也是他的缺点，支持的格式过少
+ 并且无法实时处理音频数据。
+     在构造了一个MediaRecorder对象之后，为了捕获音频，必须调用setAudioEncoder和setAudioSource这两个方法。假设不调用这些方法，
+ 那么将不会录制音频（视频也相同不会），另外，MediaRecorder在准备录制之前通常还会调用setOutputFormat 和setOutputFile，在实例化
+ MediaRecorder之后。应该调用的第一个方法是setAudioSource。它采用一个AudioSource内部类中定义的常量作为參数，我们通常使用的常量
+ 是MediaRecorder.AudioSource.MIC。依据顺序，下一个调用的就是setOutputFormat ，这种方法采用MediaRecorder.OutputFormat内部类
+ 中指定的常量作为參数：
+   1）MediaRecorder.OutputFormat.MPEG_4:这个常量指定输出的文件将是一个MPEG_4文件，包括音频跟视频轨
+   2）MediaRecorder.OutputFormat.RAW_AMR;这个常量表示输出一个没有不论什么容器类型的原始文件，仅仅有在捕获没有视频的音频且音频编码器是AMR_NB时才会使用这个常量。
+   3）MediaRecorder.OutputFormat.THREE_GPP:这个常量指定输出的文件将是一个3gpp文件（.3gp）。它可能同一时候包括音频跟视频轨
+   MediaRecorder音频编码。在设置输出格式之后，能够调用setAudioEncoder方法来设置应该使用编码器，可能的值指定为MediaRecorder.AudioEncoder类中的常量。出来使用DEFAULT之外，仅仅存在一个其它的值：MediaRecorder.AudioEncoder.AMR_NB,这是自适应多速率窄带编解码器。
+ 这样的编解码器针对语音进行了优化，因此不适应于语音之外的其它内容。默认情况下他的採样率是8kHz,码率在 4.75~12.2kbps之间。这两个
+ 数据对于录制语音之外的其它内容而言很低。可是，这是当前可用于MediaRecorder的唯一选择。
+
+   参考链接：
+   https://www.cnblogs.com/plokmju/p/android_MediaRecorder.html
+
+三、MediaCodec
+1. Android MediaCodec主要有3种数据处理的方式：
+   (1). 使用Buffers的异步处理方式（Asynchronous Processing using Buffers）
+   (2). 使用Buffers的同步处理方式（Synchronous Processing using Buffers）
+   (3). 使用Buffer数组的同步处理方式（Synchronous Processing using Buffer Arrays (deprecated)）
+
+参考链接：
+https://www.cnblogs.com/roger-yu/p/7244614.html
+https://www.cnblogs.com/roger-yu/p/5635494.html

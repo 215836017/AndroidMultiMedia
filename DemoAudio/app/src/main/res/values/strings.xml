@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">DemoAudio</string>
+
+    <!-- mediaPlayer 界面中相关的字符串 start-->
+    <string name="audio_start">开始</string>
+    <string name="audio_pause">暂停</string>
+    <string name="audio_previous">上一首</string>
+    <string name="audio_next">下一首</string>
+    <string name="playMode_list_order">顺序播放</string>
+    <string name="playMode_list_loop">列表循环</string>
+    <string name="playMode_signal_loop">单曲循环</string>
+    <string name="playMode_random">随机播放</string>
+
+    <string name="mediaPlayer_dialog_sorry">Sorry!</string>
+    <string name="mediaPlayer_dialog_sure">确定</string>
+    <!-- mediaPlayer 界面中相关的字符串 end-->
+
+
+    <!-- audioTrack 界面中相关的字符串 start-->
+    <string name="at_play_wav1">play_WAV_1</string>
+    <string name="at_play_wav2">play_WAV_2</string>
+    <string name="at_play_pcm1">play_PCM_1</string>
+    <string name="at_play_pcm2">play_PCM_2</string>
+    <string name="at_stop">stop</string>
+    <string name="at_text_readMe">AudioTrack 直接支持WAV和PCM，其他音频需要解码成PCM格式才能播放。
+        (其他无损格式没有尝试，有兴趣可以使本文提供的例子测试一下),并且是流模式，所以这里通过从sdcard
+    读取音频流来进行播放。所以在sdcard根目录下要有sdcard/a.wav, sdcard/b.wav, sdcard/a.pcm, sdcard/b.pcm
+    这四个音频文件。</string>
+    <string name="at_noFile">音频文件不存在！</string>
+    <!-- audioTrack 界面中相关的字符串 end-->
+
+
+    <!-- ringtone 界面中相关的字符串 start-->
+    <string name="rt_phoneComing">播放来电铃声的默认音乐</string>
+    <string name="rt_randoms">随机播放一个Ringtone</string>
+    <string name="rt_ringtones">播放一个设置的来电铃声</string>
+    <string name="rt_alarms">播放一个设置的闹钟铃声</string>
+    <string name="rt_notifications">播放一个设置的通知铃声</string>
+    <!-- ringtone 界面中相关的字符串 end-->
+</resources>

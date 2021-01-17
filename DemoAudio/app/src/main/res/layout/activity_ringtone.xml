@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/ringtoneAct_btn_defaultPhoneComing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/rt_phoneComing" />
+
+    <Button
+        android:id="@+id/ringtoneAct_btn_randomRingtone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/rt_randoms" />
+
+    <Button
+        android:id="@+id/ringtoneAct_btn_ringtones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/rt_ringtones" />
+
+    <Button
+        android:id="@+id/ringtoneAct_btn_alarms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/rt_alarms" />
+
+    <Button
+        android:id="@+id/ringtoneAct_btn_notifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/rt_notifications" />
+
+</LinearLayout>
