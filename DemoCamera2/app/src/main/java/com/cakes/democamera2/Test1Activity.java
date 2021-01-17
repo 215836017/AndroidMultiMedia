@@ -18,6 +18,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.text.TextUtils;
@@ -39,6 +40,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 // https://www.cnblogs.com/guanxinjing/p/10940049.html
+
+// https://www.cnblogs.com/guanxinjing/p/11009192.html
+// https://cloud.tencent.com/developer/article/1650043
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Test1Activity extends AppCompatActivity {
@@ -116,8 +120,89 @@ public class Test1Activity extends AppCompatActivity {
     }
 
     private void takePicture() {
+        try {
+            mCameraCaptureSession.stopRepeating();//停止重复   取消任何正在进行的重复捕获集 在这里就是停止画面预览，拍照结束后画面定格，不会再预览
 
+            /*  mCameraCaptureSession.abortCaptures(); //终止获取   尽可能快地放弃当前挂起和正在进行的所有捕获。
+             * 这里有一个坑,其实这个并不能随便调用(我是看到别的demo这么使用,但是其实是错误的,所以就在这里备注这个坑).
+             * 最好只在Activity里的onDestroy调用它,终止获取是耗时操作,需要一定时间重新打开会话通道.
+             * 在这个demo里我并没有恢复预览,如果你调用了这个方法关闭了会话又拍照后恢复图像预览,会话就会频繁的开关,
+             * 导致拍照图片在处理耗时缓存时你又关闭了会话.导致照片缓存不完整并且失败.
+             * 所以切记不要随便使用这个方法,会话开启后并不需要关闭刷新.后续其他拍照/预览/录制视频直接操作这个会话即可
+             */
+            CaptureRequest.Builder captureRequestBuilder = null;
+            captureRequestBuilder = cameraDevice.createCaptureRequest(cameraDevice.TEMPLATE_STILL_CAPTURE);
+            // 设置自动对焦
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            // 设置自动曝光
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            // 获取手机方向,如果你的app有提供横屏和竖屏,那么就需要下面的方法来控制照片为竖立状态
+            // int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            // Log.e(TAG, "takePicture: 手机方向="+rotation);
+            // Log.e(TAG, "takePicture: 照片方向="+ORIENTATIONS.get(rotation));
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);//这里直接写死270度，将照片竖立
+
+            Surface captureSurface = mImageReader.getSurface();
+            captureRequestBuilder.addTarget(captureSurface);
+            CaptureRequest captureRequest = captureRequestBuilder.build();
+
+            // 经测试，capture()里面的 CaptureCallback 有没有都可以，拍照的数据在mImageReader的回调里面
+            mCameraCaptureSession.capture(captureRequest, takePictureCaptureCallback, cameraHandler);
+
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
+
+    private CameraCaptureSession.CaptureCallback takePictureCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+        @Override
+        public void onCaptureStarted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, long timestamp, long frameNumber) {
+            super.onCaptureStarted(session, request, timestamp, frameNumber);
+            LogUtil.i(TAG, "takePictureCaptureCallback -- onCaptureStarted() -- 11111111");
+        }
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult
+                partialResult) {
+            super.onCaptureProgressed(session, request, partialResult);
+            LogUtil.d(TAG, "takePictureCaptureCallback -- onCaptureProgressed() -- 11111111");
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
+//                Log.e(TAG, "onCaptureCompleted: 触发接收数据");
+            Size size = request.get(CaptureRequest.JPEG_THUMBNAIL_SIZE);
+
+            // 预览时会一直打印
+            LogUtil.w(TAG, "takePictureCaptureCallback -- onCaptureCompleted() -- 11111111, width = " + size.getHeight()
+                    + ", height = " + size.getHeight());
+        }
+
+        @Override
+        public void onCaptureFailed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureFailure failure) {
+            super.onCaptureFailed(session, request, failure);
+            LogUtil.i(TAG, "takePictureCaptureCallback -- onCaptureFailed() -- 11111111");
+        }
+
+        @Override
+        public void onCaptureSequenceCompleted(@NonNull CameraCaptureSession session, int sequenceId, long frameNumber) {
+            super.onCaptureSequenceCompleted(session, sequenceId, frameNumber);
+            LogUtil.d(TAG, "takePictureCaptureCallback -- onCaptureSequenceCompleted() -- 11111111");
+        }
+
+        @Override
+        public void onCaptureSequenceAborted(@NonNull CameraCaptureSession session, int sequenceId) {
+            super.onCaptureSequenceAborted(session, sequenceId);
+            LogUtil.w(TAG, "takePictureCaptureCallback -- onCaptureSequenceAborted() -- 11111111");
+        }
+
+        @Override
+        public void onCaptureBufferLost(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull Surface target, long frameNumber) {
+            super.onCaptureBufferLost(session, request, target, frameNumber);
+            LogUtil.i(TAG, "takePictureCaptureCallback -- onCaptureBufferLost() -- 11111111");
+        }
+    };
 
     private void initPermission() {
         // todo 动态获取权限
@@ -132,17 +217,21 @@ public class Test1Activity extends AppCompatActivity {
     private FileOutputStream photoFileOutputStream;
 
     private void initPhotoFile() {
-        File path = new File(getExternalCacheDir().getPath());
-        if (!path.exists()) {
-            Log.e(TAG, "onImageAvailable: 路径不存在");
-            path.mkdirs();
-        } else {
-            Log.e(TAG, "onImageAvailable: 路径存在");
+        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/camera2/";
+        File dirFile = new File(dirPath);
+        if (null != dirFile) {
+            if (!dirFile.exists()) {
+                dirFile.mkdirs();
+            }
         }
-        File file = new File(path, "demo.jpg");
+        File file = new File(dirFile, "camera2_" + System.currentTimeMillis() + ".jpg");
         try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
             photoFileOutputStream = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -153,6 +242,7 @@ public class Test1Activity extends AppCompatActivity {
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(ImageReader reader) {
+                LogUtil.i(TAG, "onImageAvailable() --  11111111");
 //        image.acquireLatestImage();//从ImageReader的队列中获取最新的image,删除旧的
 //        image.acquireNextImage();//从ImageReader的队列中获取下一个图像,如果返回null没有新图像可用
                 Image image = reader.acquireNextImage();
@@ -160,12 +250,16 @@ public class Test1Activity extends AppCompatActivity {
                 ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
                 byte[] bytes = new byte[byteBuffer.remaining()];
                 byteBuffer.get(bytes);
+                initPhotoFile();
                 if (null != photoFileOutputStream) {
+                    LogUtil.i(TAG, "onImageAvailable() --  2222");
                     try {
+                        LogUtil.i(TAG, "onImageAvailable() --  3333");
                         photoFileOutputStream.write(bytes);
                         photoFileOutputStream.flush();
                         photoFileOutputStream.close();
                     } catch (Exception e) {
+                        LogUtil.e(TAG, "onImageAvailable() -- error: " + e.getMessage());
                     }
                 }
 
@@ -208,7 +302,6 @@ public class Test1Activity extends AppCompatActivity {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-
     }
 
     @SuppressLint("MissingPermission")
@@ -292,8 +385,8 @@ public class Test1Activity extends AppCompatActivity {
             }
         }
 
-        Log.e(TAG, "getMatchingSize: 选择的比例是=" + selectProportion);
-        Log.e(TAG, "getMatchingSize: 选择的尺寸是 宽度=" + selectSize.getWidth() + "高度=" + selectSize.getHeight());
+        LogUtil.e(TAG, "getMatchingSize: 选择的比例是=" + selectProportion);
+        LogUtil.e(TAG, "getMatchingSize: 选择的尺寸是 宽度=" + selectSize.getWidth() + "高度=" + selectSize.getHeight());
         return selectSize;
     }
 
@@ -359,7 +452,8 @@ public class Test1Activity extends AppCompatActivity {
             mCameraCaptureSession = session;
             //注意这里使用的是 setRepeatingRequest() 请求通过此捕获会话无休止地重复捕获图像。用它来一直请求预览图像
             try {
-                mCameraCaptureSession.setRepeatingRequest(mCaptureRequest.build(), mSessionCaptureCallback, cameraHandler);
+                mCameraCaptureSession.setRepeatingRequest(mCaptureRequest.build(),
+                        mSessionCaptureCallback, cameraHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }
@@ -378,40 +472,51 @@ public class Test1Activity extends AppCompatActivity {
         @Override
         public void onCaptureStarted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, long timestamp, long frameNumber) {
             super.onCaptureStarted(session, request, timestamp, frameNumber);
+            // 预览时会一直打印
+//            LogUtil.i(TAG, "mSessionCaptureCallback -- onCaptureStarted() -- 11111111");
         }
 
         @Override
         public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult
                 partialResult) {
             super.onCaptureProgressed(session, request, partialResult);
+            LogUtil.d(TAG, "mSessionCaptureCallback -- onCaptureProgressed() -- 11111111");
         }
 
         @Override
-        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session,
+                                       @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
 //                Log.e(TAG, "onCaptureCompleted: 触发接收数据");
-//                Size size = request.get(CaptureRequest.JPEG_THUMBNAIL_SIZE);
+//            Size size = request.get(CaptureRequest.JPEG_THUMBNAIL_SIZE);
 
+            // 预览时会一直打印
+//            LogUtil.w(TAG, "mSessionCaptureCallback -- onCaptureCompleted() -- 11111111, width = " + size.getHeight()
+//                    + ", height = " + size.getHeight());
         }
 
         @Override
         public void onCaptureFailed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureFailure failure) {
             super.onCaptureFailed(session, request, failure);
+            LogUtil.i(TAG, "onCaptureFailed() -- 11111111");
         }
 
         @Override
         public void onCaptureSequenceCompleted(@NonNull CameraCaptureSession session, int sequenceId, long frameNumber) {
             super.onCaptureSequenceCompleted(session, sequenceId, frameNumber);
+            LogUtil.d(TAG, "mSessionCaptureCallback -- onCaptureSequenceCompleted() -- 11111111");
         }
 
         @Override
         public void onCaptureSequenceAborted(@NonNull CameraCaptureSession session, int sequenceId) {
             super.onCaptureSequenceAborted(session, sequenceId);
+            LogUtil.w(TAG, "mSessionCaptureCallback -- onCaptureSequenceAborted() -- 11111111");
         }
 
         @Override
         public void onCaptureBufferLost(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull Surface target, long frameNumber) {
             super.onCaptureBufferLost(session, request, target, frameNumber);
+            LogUtil.i(TAG, "mSessionCaptureCallback -- onCaptureBufferLost() -- 11111111");
         }
     };
 }
