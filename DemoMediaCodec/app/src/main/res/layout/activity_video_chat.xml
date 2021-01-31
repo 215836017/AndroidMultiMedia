@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".test.VideoChatActivity">
+
+    <SurfaceView
+        android:id="@+id/video_chat_surface_camera"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
+    <SurfaceView
+        android:id="@+id/video_chat_surface_player"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/video_chat_surface_camera"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/video_chat_btn_encode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:text="开始编码" />
+
+    <Button
+        android:id="@+id/video_chat_btn_decode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:layout_toRightOf="@id/video_chat_btn_encode"
+        android:text="开始播放" />
+
+</RelativeLayout>
