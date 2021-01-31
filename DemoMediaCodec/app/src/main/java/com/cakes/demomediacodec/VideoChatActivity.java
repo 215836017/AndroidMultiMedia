@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec.test;
+package com.cakes.demomediacodec;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +15,10 @@ import android.widget.Toast;
 import com.cakes.demomediacodec.R;
 import com.cakes.demomediacodec.camera.CameraConfiguration;
 import com.cakes.demomediacodec.camera.CameraHelpers;
+import com.cakes.demomediacodec.test.AvcDecoder;
+import com.cakes.demomediacodec.test.AvcEncoder;
+import com.cakes.demomediacodec.test.MediaCodecThread;
+import com.cakes.demomediacodec.test.MediaCodecUtil;
 import com.cakes.utils.LogUtil;
 
 /**

@@ -17,15 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:onClick="mainBtnClick"
-            android:text="encode_audio" />
-
-        <Button
-            android:id="@+id/btn_encode_video"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:onClick="mainBtnClick"
-            android:text="encode_video" />
+            android:text="录音后编码" />
 
         <Button
             android:id="@+id/btn_decode_audio"
@@ -33,7 +25,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:onClick="mainBtnClick"
-            android:text="decode_audio" />
+            android:text="解码后播放音频" />
+
+        <Button
+            android:id="@+id/btn_encode_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:onClick="mainBtnClick"
+            android:text="预览并编码" />
 
         <Button
             android:id="@+id/btn_decode_video"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:onClick="mainBtnClick"
-            android:text="decode_video" />
+            android:text="解码后播放视频" />
 
         <Button
             android:id="@+id/btn_video_chat"
@@ -49,6 +49,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:onClick="mainBtnClick"
-            android:text="Video_Chat" />
+            android:text="双向音视频" />
     </LinearLayout>
 </ScrollView>

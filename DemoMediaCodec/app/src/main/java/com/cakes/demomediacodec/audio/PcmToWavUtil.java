@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec;
+package com.cakes.demomediacodec.audio;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -7,22 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * 到现在基本的录音的流程就介绍完了。但是这时候，有人就提出问题来了：
- * <p>
- * 1)、我按照流程，把音频数据都输出到文件里面了，停止录音后，打开此文件，发现不能播放，到底是为什么呢？
- * 答：按照流程走完了，数据是进去了，但是现在的文件里面的内容仅仅是最原始的音频数据，术语称为raw（中文解释
- * 是“原材料”或“未经处理的东西”），这时候，你让播放器去打开，它既不知道保存的格式是什么，又不知道如何进行
- * 解码操作。当然播放不了。
- * <p>
- * 2)、那如何才能在播放器中播放我录制的内容呢？
- * 答： 在文件的数据开头加入WAVE HEAD数据即可，也就是文件头。只有加上文件头部的数据，播放器才能正确的知道
- * 里面的内容到底是什么，进而能够正常的解析并播放里面的内容。具体的头文件的描述，
- * 在Play a WAV file on an AudioTrack(https://mindtherobot.com/blog/580/android-audio-play-a-wav-file-on-an-audiotrack/)
- * 里面可以进行了解。
- * <p>
- * 添加WAVE文件头的代码如下
- */
 public class PcmToWavUtil {
 
     /**

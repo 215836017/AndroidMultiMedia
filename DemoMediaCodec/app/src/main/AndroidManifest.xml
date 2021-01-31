@@ -23,7 +23,7 @@
         <activity android:name=".VideoEncodeActivity" />
         <activity android:name=".AudioDecodeActivity" />
         <activity android:name=".AudioEncodeActivity" />
-        <activity android:name=".test.VideoChatActivity">
+        <activity android:name=".VideoChatActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
