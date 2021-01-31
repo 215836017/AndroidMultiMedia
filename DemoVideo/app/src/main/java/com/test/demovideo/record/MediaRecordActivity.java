@@ -1,14 +1,12 @@
 package com.test.demovideo.record;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Context;
 import android.hardware.Camera;
-import android.media.CamcorderProfile;
-import android.media.MediaRecorder;
-import android.os.Build;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.SurfaceHolder;
@@ -16,26 +14,30 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.test.demovideo.R;
-import com.test.demovideo.utils.LogUtil;
-
-import java.io.File;
 
 public class MediaRecordActivity extends AppCompatActivity {
 
     private final String TAG = "MediaRecordActivity";
 
+    private SensorManager sensorManager;
+    private Sensor sensor;
+    private int sensorRotation = 0;
+
     private SurfaceView surfaceView;
     private TextView textTime;
     private Button btnPause, btnRecord;
-    private SurfaceHolder surfaceHolder;
-    private MediaRecorder mediaRecorder;
     private Camera camera;
+    private int cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
     private int timeCount = 0;
     private boolean isRecording = false;
+
+    private MediaRecorderManager mediaRecorderManager;
 
     private final int MSG_UPDATE_TIME = 0x10;
     private final Handler handler = new Handler() {
@@ -44,7 +46,6 @@ public class MediaRecordActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if (msg.what == MSG_UPDATE_TIME) {
                 textTime.setText(timeCount + "s");
-
                 if (isRecording) {
                     timeCount++;
                     handler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 1000);
@@ -58,13 +59,24 @@ public class MediaRecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_record);
 
+        initSensor();
         initViews();
+
+        mediaRecorderManager = new MediaRecorderManager(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        sensorManager.unregisterListener(sensorEventListener, sensor);
         release();
+    }
+
+    private void initSensor() {
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(sensorEventListener, sensor,
+                SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private void initViews() {
@@ -73,54 +85,18 @@ public class MediaRecordActivity extends AppCompatActivity {
         btnPause = findViewById(R.id.media_record_act_btn_pause);
         btnRecord = findViewById(R.id.media_record_act_btn_record);
 
-        SurfaceHolder holder = surfaceView.getHolder();
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // 必须-设置Surface不需要维护自己的缓冲区
-
+        surfaceView.getHolder().addCallback(surfaceCallback);
     }
 
     private void release() {
-        if (null != mediaRecorder) {
-            mediaRecorder.stop();
-            mediaRecorder.reset();
-            mediaRecorder.release();
-            mediaRecorder = null;
+        if (null != mediaRecorderManager) {
+            mediaRecorderManager.stopRecordVideo();
         }
 
         if (null != camera) {
             camera.release();
             camera = null;
         }
-    }
-
-    private boolean initMediaRecord() {
-        if (null != mediaRecorder) {
-            return true;
-        }
-        try {
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.reset();
-            camera = Camera.open();
-            if (camera != null) {
-                //设置旋转角度，顺时针方向，因为默认是逆向90度的，这样图像就是正常显示了
-                camera.setDisplayOrientation(90);
-                camera.unlock();
-                mediaRecorder.setCamera(camera);
-                LogUtil.e(TAG, "initMediaRecord() -- 11111 = ");
-            }
-            /*recorder设置部分*/
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-            mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
-            mediaRecorder.setOutputFile(getOutputMediaFile());
-            mediaRecorder.setPreviewDisplay(surfaceView.getHolder().getSurface());
-            mediaRecorder.prepare();
-            return true;
-        } catch (Exception e) {
-            LogUtil.e(TAG, "initMediaRecord() -- error = " + e.getMessage());
-        }
-
-        return false;
     }
 
     public void mediaRecordBtnClick(View view) {
@@ -133,17 +109,13 @@ public class MediaRecordActivity extends AppCompatActivity {
     }
 
     private void pauseRecord() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Toast.makeText(this, "此功能需要Android24及以上的版本", Toast.LENGTH_LONG).show();
-            return;
-        }
         if (isRecording) {
             isRecording = false;
-            mediaRecorder.pause();
+            mediaRecorderManager.pauseRecordVideo();
             btnPause.setText("继续录制");
         } else {
             isRecording = true;
-            mediaRecorder.resume();
+            mediaRecorderManager.resumeRecordVideo();
             btnPause.setText("暂停录制");
         }
     }
@@ -161,32 +133,50 @@ public class MediaRecordActivity extends AppCompatActivity {
             isRecording = true;
             btnRecord.setText("结束录制");
             btnPause.setClickable(true);
-            initMediaRecord();
-            mediaRecorder.start();
-        }
-    }
-
-    /*
-     *创建视频存储文件夹 录制好的视频存储在手机外部存储中 以录像时间+mp4格式命名
-     * */
-    private String getOutputMediaFile() {
-        LogUtil.d(TAG, "获取视频存储的位置 ");
-        String mediaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testRecord/test.mp4";
-        if (mediaPath != null) {
-            File file = new File(mediaPath);
-            File parentFile = file.getParentFile();
-            if (!parentFile.exists()) {
-                parentFile.mkdirs();
-            }
-            try {
-                if (!file.exists()) {
-                    file.createNewFile();
+            if (null != camera) {
+                int phoneRotation = -1;
+                Camera.CameraInfo info = new Camera.CameraInfo();
+                Camera.getCameraInfo(cameraId, info);
+                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    phoneRotation = (info.orientation - sensorRotation + 360) % 360;
+                } else {
+                    phoneRotation = (info.orientation + sensorRotation) % 360;
                 }
-            } catch (Exception e) {
+                mediaRecorderManager.startRecordVideo(camera, phoneRotation);
             }
-
         }
-        return mediaPath;
     }
 
+    private SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            camera = Camera.open(cameraId);
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+
+        }
+    };
+
+    private SensorEventListener sensorEventListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            // 读取加速度传感器数值，values数组0,1,2分别对应x,y,z轴的加速度
+            if (Sensor.TYPE_ACCELEROMETER != event.sensor.getType()) {
+                return;
+            }
+            sensorRotation = AngleUtil.getSensorAngle(event.values[0], event.values[1]);
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
 }
