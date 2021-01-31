@@ -7,13 +7,13 @@ public class CameraConfiguration {
 
     public static final int DEFAULT_PREVIEW_FPS_MAX = 30;
     public static final int DEFAULT_PREVIEW_FPS_MIN = 12;
-    public static final int DEFAULT_PREVIEW_WIDTH = 640;
-    public static final int DEFAULT_PREVIEW_HEIGHT = 480;
+    public static final int DEFAULT_PREVIEW_WIDTH = 320;
+    public static final int DEFAULT_PREVIEW_HEIGHT = 240;
     public static final int DEFAULT_PREVIEW_FORMAT = ImageFormat.NV21;
     public static final int DEFAULT_FPS = 15;
 
-    public static final int DEFAULT_PICTURE_WIDTH = 640;
-    public static final int DEFAULT_PICTURE_HEIGHT = 480;
+    public static final int DEFAULT_PICTURE_WIDTH = 320;
+    public static final int DEFAULT_PICTURE_HEIGHT = 320;
     public static final int DEFAULT_JPEG_QUALITY = 100;
 
     public static void setDefaultParameters(Camera.Parameters parameters) {

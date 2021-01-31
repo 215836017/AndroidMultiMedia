@@ -33,7 +33,7 @@ public class AvcEncoder {
     private ArrayBlockingQueue<byte[]> YUVQueue = new ArrayBlockingQueue<byte[]>(YUV_QUEUE_SIZE);
 
     private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test1.h264";
-//    private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testDecode.h264";
+    //    private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testDecode.h264";
     private BufferedOutputStream outputStream;
 
     private final String mime = "video/avc";
@@ -57,7 +57,7 @@ public class AvcEncoder {
              mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
          */
 
-        MediaFormat mediaFormat = MediaFormat.createVideoFormat(mime, width, height);
+        MediaFormat mediaFormat = MediaFormat.createVideoFormat(mime, height, width);
         mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar);
         mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, width * height * 5);
@@ -89,10 +89,16 @@ public class AvcEncoder {
     }
 
     public void inputYUVToQueue(byte[] data) {
-        if (YUVQueue.size() > YUV_QUEUE_SIZE) {
-            YUVQueue.poll();
+//        if (YUVQueue.size() > YUV_QUEUE_SIZE) {
+//            YUVQueue.poll();
+//        }
+//        YUVQueue.offer(data);
+
+        try {
+            outputStream.write(data);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        YUVQueue.offer(data);
     }
 
     private void stopEncoder() {
@@ -115,6 +121,7 @@ public class AvcEncoder {
         }
     }
 
+
     public void startEncoderThread() {
         Thread EncoderThread = new Thread(new Runnable() {
 
@@ -124,17 +131,18 @@ public class AvcEncoder {
                 byte[] input = null;
                 long pts = 0;
                 long generateIndex = 0;
-
+                byte[] rotatedData = null;
+                byte[] yuv420sp = new byte[m_width * m_height * 3 / 2];
                 while (isRunning) {
                     if (YUVQueue.size() > 0) {
                         //从缓冲队列中取出一帧
                         input = YUVQueue.poll();
-                        byte[] yuv420sp = new byte[m_width * m_height * 3 / 2];
+
                         //把待编码的视频帧转换为YUV420格式
                         NV21ToNV12(input, yuv420sp, m_width, m_height);
-                        input = yuv420sp;
+                        rotatedData = rotateNV290(yuv420sp, m_width, m_height);
                     }
-                    if (input != null) {
+                    if (rotatedData != null) {
                         try {
                             long startMs = System.currentTimeMillis();
                             //编码器输入缓冲区
@@ -147,8 +155,8 @@ public class AvcEncoder {
                                 ByteBuffer inputBuffer = inputBuffers[inputBufferIndex];
                                 inputBuffer.clear();
                                 //把转换后的YUV420格式的视频帧放到编码器输入缓冲区中
-                                inputBuffer.put(input);
-                                mediaCodec.queueInputBuffer(inputBufferIndex, 0, input.length, pts, 0);
+                                inputBuffer.put(rotatedData);
+                                mediaCodec.queueInputBuffer(inputBufferIndex, 0, rotatedData.length, pts, 0);
                                 generateIndex += 1;
                             }
 
@@ -160,7 +168,7 @@ public class AvcEncoder {
                                 byte[] outData = new byte[bufferInfo.size];
                                 outputBuffer.get(outData);
 
-                                outputStream.write(outData, 0, outData.length);
+                             //   outputStream.write(outData, 0, outData.length);
 
 //                                if (bufferInfo.flags == BUFFER_FLAG_CODEC_CONFIG) {
 //                                    configbyte = new byte[bufferInfo.size];
@@ -198,6 +206,9 @@ public class AvcEncoder {
 
     }
 
+    /**
+     * 因为从MediaCodec不支持NV21的数据编码，所以需要先讲NV21的数据转码为NV12
+     */
     private void NV21ToNV12(byte[] nv21, byte[] nv12, int width, int height) {
         if (nv21 == null || nv12 == null) return;
         int framesize = width * height;
@@ -213,6 +224,38 @@ public class AvcEncoder {
             nv12[framesize + j] = nv21[j + framesize - 1];
         }
     }
+
+    /**
+     * 此处为顺时针旋转旋转90度
+     *
+     * @param data        旋转前的数据
+     * @param imageWidth  旋转前数据的宽
+     * @param imageHeight 旋转前数据的高
+     * @return 旋转后的数据
+     */
+    private byte[] rotateNV290(byte[] data, int imageWidth, int imageHeight) {
+        byte[] yuv = new byte[imageWidth * imageHeight * 3 / 2];
+        // Rotate the Y luma
+        int i = 0;
+        for (int x = 0; x < imageWidth; x++) {
+            for (int y = imageHeight - 1; y >= 0; y--) {
+                yuv[i] = data[y * imageWidth + x];
+                i++;
+            }
+        }
+        // Rotate the U and V color components
+        i = imageWidth * imageHeight * 3 / 2 - 1;
+        for (int x = imageWidth - 1; x > 0; x = x - 2) {
+            for (int y = 0; y < imageHeight / 2; y++) {
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
+                i--;
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x - 1)];
+                i--;
+            }
+        }
+        return yuv;
+    }
+
 
     /**
      * Generates the presentation time for frame N, in microseconds.

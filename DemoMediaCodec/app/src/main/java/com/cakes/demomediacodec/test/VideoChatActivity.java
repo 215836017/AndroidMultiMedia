@@ -19,6 +19,7 @@ import com.cakes.utils.LogUtil;
 
 /**
  * https://github.com/sszhangpengfei/MediaCodecEncodeH264
+ * https://blog.csdn.net/a512337862/article/details/72629779
  */
 public class VideoChatActivity extends AppCompatActivity {
 
@@ -80,10 +81,9 @@ public class VideoChatActivity extends AppCompatActivity {
             isStartEncode = true;
             btnEncode.setText("正在编码中");
 
-            avcEncoder.startEncoderThread();
+//            avcEncoder.startEncoderThread();
         }
     }
-
 
     private SurfaceHolder.Callback surfaceCallbackOfCamera = new SurfaceHolder.Callback() {
         @Override
@@ -114,7 +114,7 @@ public class VideoChatActivity extends AppCompatActivity {
     private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
-//            LogUtil.i(TAG, "onPreviewFrame() -- data.length = " + data.length);
+            LogUtil.i(TAG, "onPreviewFrame() -- data.length = " + data.length);
             if (isStartEncode) {
                 avcEncoder.inputYUVToQueue(data);
             }
@@ -133,7 +133,7 @@ public class VideoChatActivity extends AppCompatActivity {
             isStartDecode = true;
             btnDecode.setText("正在播放中");
 
-//            avcDecoder.startDecodingThread();
+            avcDecoder.startDecodingThread();
             if (thread != null) {
                 thread.start();
             }
@@ -145,7 +145,7 @@ public class VideoChatActivity extends AppCompatActivity {
     private MediaCodecUtil codecUtil;
     //读取文件解码线程
     private MediaCodecThread thread;
-        private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testDecode.h264";
+    private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testDecode.h264";
     private SurfaceHolder.Callback surfaceCallbackOfPlay = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
