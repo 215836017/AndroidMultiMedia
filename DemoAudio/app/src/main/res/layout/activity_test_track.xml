@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".player.audiotrack.TestTrackActivity">
+    tools:context=".player.audiotrack.AudioTrackActivity">
 
     <Button
         android:id="@+id/btn_play_pcm"

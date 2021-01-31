@@ -139,6 +139,7 @@ public class AudioTrackManager {
 
     /**
      * 播放文件
+     *
      * @param path
      * @throws Exception
      */
@@ -154,17 +155,8 @@ public class AudioTrackManager {
      */
     public void startPlay(String path) {
         try {
-//            //AudioTrack未初始化
-//            if(mAudioTrack.getState() == AudioTrack.STATE_UNINITIALIZED){
-//                throw new RuntimeException("The AudioTrack is not uninitialized");
-//            }//AudioRecord.getMinBufferSize的参数是否支持当前的硬件设备
-//            else if (AudioTrack.ERROR_BAD_VALUE == mMinBufferSize || AudioTrack.ERROR == mMinBufferSize) {
-//                throw new RuntimeException("AudioTrack Unable to getMinBufferSize");
-//            }else{
             setPath(path);
             startThread();
-//            }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

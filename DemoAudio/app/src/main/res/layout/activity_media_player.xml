@@ -5,36 +5,12 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/mediaPlayerAct_btn_load_raw"
+        android:id="@+id/mediaPlayerAct_btn_play"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:onClick="mediaPlayerBtnClick"
-        android:text="播放程序自带的音频" />
-
-    <Button
-        android:id="@+id/mediaPlayerAct_btn_load_sdcard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:onClick="mediaPlayerBtnClick"
-        android:text="从手机存储中加载音频" />
-
-    <Button
-        android:id="@+id/mediaPlayerAct_btn_load_url"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:onClick="mediaPlayerBtnClick"
-        android:text="在线播放URL指定的音频" />
-
-    <Button
-        android:id="@+id/mediaPlayerAct_btn_pause"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:onClick="mediaPlayerBtnClick"
-        android:text="暂停播放" />
+        android:text="开始播放" />
 
     <Button
         android:id="@+id/mediaPlayerAct_btn_stop"

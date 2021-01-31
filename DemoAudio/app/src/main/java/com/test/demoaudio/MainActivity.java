@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.test.demoaudio.player.audiotrack.TestTrackActivity;
+import com.test.demoaudio.player.audiotrack.AudioTrackActivity;
 import com.test.demoaudio.player.ringtone.RingtoneActivity;
 import com.test.demoaudio.player.mediaplayer.MediaPlayerActivity;
 import com.test.demoaudio.player.soundpool.SoundPoolActivity;
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.main_act_btn_audio_track:
 //                intent.setClass(this, AudioTrackActivity.class);
-                intent.setClass(this, TestTrackActivity.class);
+                intent.setClass(this, AudioTrackActivity.class);
                 break;
 
             case R.id.main_act_btn_ringtone:

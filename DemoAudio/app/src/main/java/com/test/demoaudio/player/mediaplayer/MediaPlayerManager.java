@@ -1,5 +1,6 @@
 package com.test.demoaudio.player.mediaplayer;
 
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
@@ -18,20 +19,12 @@ public class MediaPlayerManager {
 
     private final int DELAY_PREPARE_FAILED = 10 * 1000;
 
-    private final int MSG_PREPARE_SUCC = 1;
     private final int MSG_PREPARE_FAILED = 2;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-
-                case MSG_PREPARE_SUCC:
-                    mMediaPlayer.start();
-                    if (musicPlayerListener != null) {
-                        musicPlayerListener.onStart();
-                    }
-                    break;
 
                 case MSG_PREPARE_FAILED:
                     if (null != mMediaPlayer) {
@@ -49,10 +42,10 @@ public class MediaPlayerManager {
         mMediaPlayer = new MediaPlayer();
         this.musicPlayerListener = listener;
 
-        setMediaplayerListeners();
+        setMediaPlayerListeners();
     }
 
-    private void setMediaplayerListeners() {
+    private void setMediaPlayerListeners() {
         mMediaPlayer.setOnErrorListener(mOnErrorListener);
         mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
         mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
@@ -60,6 +53,16 @@ public class MediaPlayerManager {
 
     public boolean isPlaying() {
         return mMediaPlayer.isPlaying();
+    }
+
+    public void play(AssetFileDescriptor fd) {
+        try {
+            mMediaPlayer.reset();
+            mMediaPlayer.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+            mMediaPlayer.prepareAsync();
+            handler.sendEmptyMessageDelayed(MSG_PREPARE_FAILED, DELAY_PREPARE_FAILED);
+        } catch (IOException e) {
+        }
     }
 
     public void play(String musicPath) {
@@ -86,20 +89,19 @@ public class MediaPlayerManager {
     }
 
     public void pausePlay() {
-//        if (mMediaPlayer.isPlaying()) {
-        mMediaPlayer.pause();
-//        }
+        if (null != mMediaPlayer) {
+            mMediaPlayer.pause();
+        }
     }
 
     public void resumePlay() {
-//        if(!mMediaPlayer.isPlaying()){
-
-        mMediaPlayer.start();
-//        }
+        if (null != mMediaPlayer) {
+            mMediaPlayer.start();
+        }
     }
 
     public void stop() {
-        if (mMediaPlayer.isPlaying()) {
+        if (null != mMediaPlayer && mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
 
             if (musicPlayerListener != null) {
@@ -124,7 +126,10 @@ public class MediaPlayerManager {
         public void onPrepared(MediaPlayer mp) {
             Log.d(TAG, "onPrepared");
             handler.removeMessages(MSG_PREPARE_FAILED);
-            handler.sendEmptyMessage(MSG_PREPARE_SUCC);
+            mMediaPlayer.start();
+            if (musicPlayerListener != null) {
+                musicPlayerListener.onStart();
+            }
         }
     };
 

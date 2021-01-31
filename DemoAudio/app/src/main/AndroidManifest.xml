@@ -14,13 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".player.audiotrack.TestTrackActivity"></activity>
+        <activity android:name=".player.audiotrack.AudioTrackActivity"></activity>
         <activity android:name=".record.SystemRecordActivity" />
         <activity android:name=".record.AudioRecordActivity" />
         <activity android:name=".record.MediaRecorderActivity" />
         <activity android:name=".player.ringtone.RingtoneActivity" />
         <activity android:name=".player.soundpool.SoundPoolActivity" />
-        <activity android:name=".player.audiotrack.AudioTrackActivity" />
         <activity android:name=".player.mediaplayer.MediaPlayerActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
