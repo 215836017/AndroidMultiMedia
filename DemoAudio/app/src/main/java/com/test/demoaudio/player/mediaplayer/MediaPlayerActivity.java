@@ -10,9 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.test.demoaudio.R;
 
-/**
- * 使用MediaPlayer播放音频资源， 缺点：只是一个demo，不支持后台播放。
- */
 public class MediaPlayerActivity extends AppCompatActivity {
 
     private Button btnRaw, btnSdcard, btnUri;

@@ -21,6 +21,7 @@ import com.test.demoaudio.utils.TimeUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 
 /**
  * 使用AudioRecord进行录音，并保存在本地

@@ -12,9 +12,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.test.demoaudio.player.audiotrack.AudioTrackActivity;
-import com.test.demoaudio.player.mediaplayer.MediaPlayerActivity;
+import com.test.demoaudio.player.audiotrack.TestTrackActivity;
 import com.test.demoaudio.player.ringtone.RingtoneActivity;
+import com.test.demoaudio.player.mediaplayer.MediaPlayerActivity;
 import com.test.demoaudio.player.soundpool.SoundPoolActivity;
 import com.test.demoaudio.record.AudioRecordActivity;
 import com.test.demoaudio.record.MediaRecorderActivity;
@@ -23,14 +23,6 @@ import com.test.demoaudio.utils.LogUtil;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-/**
- * https://www.cnblogs.com/HDK2016/p/8043247.html
- * <p>
- * https://download.csdn.net/download/u010623392/10790842?tdsourcetag=s_pcqq_aiomsg
- * https://blog.csdn.net/leixiaohua1020
- * http://www.rosoo.net/
- * http://bbs.chinaffmpeg.com/forum.php
- */
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
@@ -49,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        applyAllNeedPermissions();
+        applyAllNeedPermissions();
     }
 
     private void applyAllNeedPermissions() {
@@ -135,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.main_act_btn_audio_track:
-                intent.setClass(this, AudioTrackActivity.class);
+//                intent.setClass(this, AudioTrackActivity.class);
+                intent.setClass(this, TestTrackActivity.class);
                 break;
 
             case R.id.main_act_btn_ringtone:
