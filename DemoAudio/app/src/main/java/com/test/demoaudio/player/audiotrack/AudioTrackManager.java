@@ -36,7 +36,6 @@ public class AudioTrackManager {
     // 应用层从某个地方获取数据，例如通过编解码得到PCM数据，然后write到audiotrack。
     private static int mMode = AudioTrack.MODE_STREAM;
 
-
     public AudioTrackManager() {
         initData();
     }
@@ -50,7 +49,6 @@ public class AudioTrackManager {
         mAudioTrack = new AudioTrack(mStreamType, mSampleRateInHz, mChannelConfig,
                 mAudioFormat, mMinBufferSize, mMode);
     }
-
 
     /**
      * 获取单例引用
@@ -139,9 +137,6 @@ public class AudioTrackManager {
 
     /**
      * 播放文件
-     *
-     * @param path
-     * @throws Exception
      */
     private void setPath(String path) throws Exception {
         File file = new File(path);
@@ -150,8 +145,6 @@ public class AudioTrackManager {
 
     /**
      * 启动播放
-     *
-     * @param path
      */
     public void startPlay(String path) {
         try {

@@ -1,5 +1,7 @@
 package com.test.demoaudio.player.mediaplayer;
 
+import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -10,6 +12,8 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.test.demoaudio.R;
+
+import java.io.IOException;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
@@ -23,6 +27,19 @@ public class MediaPlayerActivity extends AppCompatActivity {
      */
     private final String musicPath = Environment.getExternalStorageDirectory().getAbsolutePath()
             + "/test/test.mp3";
+
+    private static final String MP3_ASSET_TEST = "asset_test.mp3";
+
+    /**
+     * 获取asset目录下的mp3文件
+     */
+    private AssetFileDescriptor getAssetMP3(Context context) {
+        try {
+            return context.getAssets().openFd(MP3_ASSET_TEST);
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
     private final int MSG_PLAY_FINISH = 0x10;
     private Handler handler = new Handler() {
