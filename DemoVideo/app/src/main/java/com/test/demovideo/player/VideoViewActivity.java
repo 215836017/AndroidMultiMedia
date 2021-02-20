@@ -42,6 +42,5 @@ public class VideoViewActivity extends AppCompatActivity {
             videoView.stopPlayback();
             videoView = null;
         }
-
     }
 }

@@ -10,14 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/ms_activity_btn_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        android:onClick="msActBtnClick"
-        android:text="back" />
 
     <Button
         android:id="@+id/ms_activity_btn_play"
@@ -29,13 +21,4 @@
         android:onClick="msActBtnClick"
         android:text="play" />
 
-    <Button
-        android:id="@+id/ms_activity_btn_forward"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        android:onClick="msActBtnClick"
-        android:text="forward" />
 </RelativeLayout>

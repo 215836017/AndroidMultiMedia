@@ -15,12 +15,11 @@ import com.test.demovideo.R;
 import java.io.IOException;
 
 /**
- * MediaPlayer+SurfaceView+自定义控制器
+ * MediaPlayer+SurfaceView
  */
 public class MSActivity extends AppCompatActivity {
 
     private SurfaceView surfaceView;
-    private Button btnPlay, btnBack, btnForward;
 
     private MediaPlayer mediaPlayer;
 
@@ -39,9 +38,6 @@ public class MSActivity extends AppCompatActivity {
 
     private void initViews() {
         surfaceView = findViewById(R.id.ms_activity_surfaceview);
-        btnPlay = findViewById(R.id.ms_activity_btn_play);
-        btnBack = findViewById(R.id.ms_activity_btn_back);
-        btnForward = findViewById(R.id.ms_activity_btn_forward);
     }
 
     private void initMedias() {
@@ -72,12 +68,6 @@ public class MSActivity extends AppCompatActivity {
     public void msActBtnClick(View view) {
         if (view.getId() == R.id.ms_activity_btn_play) {
             playVideo();
-
-        } else if (view.getId() == R.id.ms_activity_btn_back) {
-
-
-        } else if (view.getId() == R.id.ms_activity_btn_forward) {
-
         }
     }
 

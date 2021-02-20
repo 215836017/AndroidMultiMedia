@@ -1,28 +1,24 @@
 package com.test.demovideo;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import android.Manifest;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.view.View;
 
 import com.test.demovideo.player.MSActivity;
 import com.test.demovideo.player.MSMActivity;
 import com.test.demovideo.player.MTActivity;
 import com.test.demovideo.player.VideoViewActivity;
 import com.test.demovideo.record.MediaRecordActivity;
+import com.test.demovideo.record.SysRecordActivity;
 import com.test.demovideo.utils.LogUtil;
-
-import java.io.File;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -38,7 +34,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
-    private final int REQUEST_CODE_RECORD_VIDEO = 1;
+
     private final int CODE_REQUEST_ALL_PERMISSIONS = 0x10;
     private AlertDialog alertDialog;
     private final String[] requestPermissions = {
@@ -118,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.main_act_btn_sys_app:
-                callSysRecord();
+                startActivity(new Intent(this, SysRecordActivity.class));
                 break;
 
             case R.id.main_act_btn_media_record:
@@ -143,24 +139,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void callSysRecord() {
-//        String filePath = FileManager.get().getRootFile() + "/msc/" + itemId + ".mp4";   // 保存路径
-        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recordVideo/testSys.mp4";
-        Uri uri = Uri.fromFile(new File(filePath));   // 将路径转换为Uri对象
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);  // 表示跳转至相机的录视频界面
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);    // MediaStore.EXTRA_VIDEO_QUALITY 表示录制视频的质量，从 0-1，越大表示质量越好，同时视频也越大
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);    // 表示录制完后保存的录制，如果不写，则会保存到默认的路径，在onActivityResult()的回调，通过intent.getData中返回保存的路径
-//        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30);   // 设置视频录制的最长时间
-        startActivityForResult(intent, REQUEST_CODE_RECORD_VIDEO);  // 跳转
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && null != data) {
-            if (requestCode == REQUEST_CODE_RECORD_VIDEO) {
-                Uri Uri = data.getData();          // 视频的保存路径
-            }
-        }
-    }
 }
