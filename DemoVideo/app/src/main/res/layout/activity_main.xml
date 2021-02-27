@@ -37,13 +37,6 @@
             android:text="MediaPlayer+SurfaceView+自定义控制器" />
 
         <Button
-            android:id="@+id/main_act_btn_msm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="btnClick"
-            android:text="MediaPlayer+SurfaceView+MediaController" />
-
-        <Button
             android:id="@+id/main_act_btn_mt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

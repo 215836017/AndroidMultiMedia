@@ -44,14 +44,14 @@ public class SysRecordActivity extends AppCompatActivity {
     }
 
     private void btnClick() {
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE); // ±íÊ¾Ìø×ªÖÁÏà»úµÄÂ¼ÊÓÆµ½çÃæ
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE); // è¡¨ç¤ºè·³è½¬è‡³ç›¸æœºçš„å½•è§†é¢‘ç•Œé¢
 
         String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recordVideo/testSys.mp4";
-        Uri uri = Uri.fromFile(new File(filePath));   // ½«Â·¾¶×ª»»ÎªUri¶ÔÏó
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);    // MediaStore.EXTRA_VIDEO_QUALITY ±íÊ¾Â¼ÖÆÊÓÆµµÄÖÊÁ¿£¬´Ó 0-1£¬Ô½´ó±íÊ¾ÖÊÁ¿Ô½ºÃ£¬Í¬Ê±ÊÓÆµÒ²Ô½´ó
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);    // ±íÊ¾Â¼ÖÆÍêºó±£´æµÄÂ¼ÖÆ£¬Èç¹û²»Ğ´£¬Ôò»á±£´æµ½Ä¬ÈÏµÄÂ·¾¶£¬ÔÚonActivityResult()µÄ»Øµ÷£¬Í¨¹ıintent.getDataÖĞ·µ»Ø±£´æµÄÂ·¾¶
-//        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30);   // ÉèÖÃÊÓÆµÂ¼ÖÆµÄ×î³¤Ê±¼ä
-        startActivityForResult(intent, REQUEST_CODE_RECORD_VIDEO);  // Ìø×ª
+        Uri uri = Uri.fromFile(new File(filePath));   // å°†è·¯å¾„è½¬æ¢ä¸ºUriå¯¹è±¡
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);    // MediaStore.EXTRA_VIDEO_QUALITY è¡¨ç¤ºå½•åˆ¶è§†é¢‘çš„è´¨é‡ï¼Œä» 0-1ï¼Œè¶Šå¤§è¡¨ç¤ºè´¨é‡è¶Šå¥½ï¼ŒåŒæ—¶è§†é¢‘ä¹Ÿè¶Šå¤§
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);    // è¡¨ç¤ºå½•åˆ¶å®Œåä¿å­˜çš„å½•åˆ¶ï¼Œå¦‚æœä¸å†™ï¼Œåˆ™ä¼šä¿å­˜åˆ°é»˜è®¤çš„è·¯å¾„ï¼Œåœ¨onActivityResult()çš„å›è°ƒï¼Œé€šè¿‡intent.getDataä¸­è¿”å›ä¿å­˜çš„è·¯å¾„
+//        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30);   // è®¾ç½®è§†é¢‘å½•åˆ¶çš„æœ€é•¿æ—¶é—´
+        startActivityForResult(intent, REQUEST_CODE_RECORD_VIDEO);  // è·³è½¬
     }
 
 }

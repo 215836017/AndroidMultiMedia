@@ -22,22 +22,12 @@
         tools:text="10s" />
 
     <Button
-        android:id="@+id/media_record_act_btn_pause"
+        android:id="@+id/media_record_act_btn_record"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:onClick="mediaRecordBtnClick"
-        android:text="暂停录制" />
-
-    <Button
-        android:id="@+id/media_record_act_btn_record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        android:onClick="mediaRecordBtnClick"
-        android:text="录制视频" />
+        android:text="开始录制视频" />
 </RelativeLayout>

@@ -49,8 +49,8 @@ public class MSActivity extends AppCompatActivity {
         mediaPlayer.setOnPreparedListener(onPreparedListener);
         mediaPlayer.setOnSeekCompleteListener(onSeekCompleteListener);
         mediaPlayer.setOnVideoSizeChangedListener(onVideoSizeChangedListener);
-
-        String mediaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testRecord/test.mp4";
+        //        String mediaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testRecord/test.mp4";
+        String mediaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testRecord/test.3gp";
         try {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(mediaPath);
@@ -120,8 +120,10 @@ public class MSActivity extends AppCompatActivity {
     private SurfaceHolder.Callback callback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            mediaPlayer.setDisplay(holder);
-            mediaPlayer.prepareAsync();
+            if (null != mediaPlayer) {
+                mediaPlayer.setDisplay(holder);
+                mediaPlayer.prepareAsync();
+            }
         }
 
         @Override

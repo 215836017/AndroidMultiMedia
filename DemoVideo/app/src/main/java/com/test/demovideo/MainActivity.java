@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.test.demovideo.player.MSActivity;
-import com.test.demovideo.player.MSMActivity;
 import com.test.demovideo.player.MTActivity;
 import com.test.demovideo.player.VideoViewActivity;
 import com.test.demovideo.record.MediaRecordActivity;
@@ -127,10 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.main_act_btn_ms:
                 startActivity(new Intent(this, MSActivity.class));
-                break;
-
-            case R.id.main_act_btn_msm:
-                startActivity(new Intent(this, MSMActivity.class));
                 break;
 
             case R.id.main_act_btn_mt:

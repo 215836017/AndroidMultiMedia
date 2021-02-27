@@ -25,7 +25,8 @@ public class VideoViewActivity extends AppCompatActivity {
         videoView = findViewById(R.id.mv_activity_videoview);
 
         //加载指定的视频文件
-        String mediaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testRecord/test.mp4";
+        //        String mediaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testRecord/test.mp4";
+        String mediaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testRecord/test.3gp";
         videoView.setVideoPath(mediaPath);
 
         mediaController = new MediaController(this);

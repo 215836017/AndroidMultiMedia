@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.test.demovideo.R;
+import com.test.demovideo.utils.LogUtil;
 
 public class MediaRecordActivity extends AppCompatActivity {
 
@@ -30,16 +31,17 @@ public class MediaRecordActivity extends AppCompatActivity {
 
     private SurfaceView surfaceView;
     private TextView textTime;
-    private Button btnPause, btnRecord;
-    private Camera camera;
-    private int cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+    private Button btnRecord;
 
     private int timeCount = 0;
     private boolean isRecording = false;
-
+    private MyCameraManager cameraManager;
     private MediaRecorderManager mediaRecorderManager;
 
-    private final int MSG_UPDATE_TIME = 0x10;
+    private final int MSG_OPEN_CAMERA_FAIL = 10;
+    private final int MSG_PREVIEW_CAMERA_FAIL = 11;
+    private final int MSG_PREVIEW_CAMERA_SUCCESS = 12;
+    private final int MSG_UPDATE_TIME = 0x13;
     private final Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -66,9 +68,11 @@ public class MediaRecordActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        sensorManager.unregisterListener(sensorEventListener, sensor);
+    protected void onStop() {
+        super.onStop();
+        if (null != sensorManager) {
+            sensorManager.unregisterListener(sensorEventListener, sensor);
+        }
         release();
     }
 
@@ -82,7 +86,6 @@ public class MediaRecordActivity extends AppCompatActivity {
     private void initViews() {
         surfaceView = findViewById(R.id.media_record_act_sv);
         textTime = findViewById(R.id.media_record_act_tv);
-        btnPause = findViewById(R.id.media_record_act_btn_pause);
         btnRecord = findViewById(R.id.media_record_act_btn_record);
 
         surfaceView.getHolder().addCallback(surfaceCallback);
@@ -93,17 +96,13 @@ public class MediaRecordActivity extends AppCompatActivity {
             mediaRecorderManager.stopRecordVideo();
         }
 
-        if (null != camera) {
-            camera.release();
-            camera = null;
+        if (null != cameraManager) {
+            cameraManager.release();
         }
     }
 
     public void mediaRecordBtnClick(View view) {
-        if (view.getId() == R.id.media_record_act_btn_pause) {
-            pauseRecord();
-
-        } else if (view.getId() == R.id.media_record_act_btn_record) {
+        if (view.getId() == R.id.media_record_act_btn_record) {
             startRecord();
         }
     }
@@ -112,45 +111,45 @@ public class MediaRecordActivity extends AppCompatActivity {
         if (isRecording) {
             isRecording = false;
             mediaRecorderManager.pauseRecordVideo();
-            btnPause.setText("继续录制");
         } else {
             isRecording = true;
             mediaRecorderManager.resumeRecordVideo();
-            btnPause.setText("暂停录制");
         }
     }
 
     private void startRecord() {
-        btnPause.setText("暂停录制");
 
         if (isRecording) {
             isRecording = false;
             btnRecord.setText("录制视频");
-            btnPause.setClickable(false);
-            release();
-
+            if (null != mediaRecorderManager) {
+                mediaRecorderManager.stopRecordVideo();
+            }
         } else {
             isRecording = true;
             btnRecord.setText("结束录制");
-            btnPause.setClickable(true);
-            if (null != camera) {
-                int phoneRotation = -1;
-                Camera.CameraInfo info = new Camera.CameraInfo();
-                Camera.getCameraInfo(cameraId, info);
-                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                    phoneRotation = (info.orientation - sensorRotation + 360) % 360;
-                } else {
-                    phoneRotation = (info.orientation + sensorRotation) % 360;
-                }
-                mediaRecorderManager.startRecordVideo(camera, phoneRotation);
+
+            int phoneRotation = -1;
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            Camera.getCameraInfo(cameraManager.getCameraId(), info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                phoneRotation = (info.orientation - sensorRotation + 360) % 360;
+            } else {
+                phoneRotation = (info.orientation + sensorRotation) % 360;
             }
+
+            mediaRecorderManager = new MediaRecorderManager(this);
+            mediaRecorderManager.startRecordVideo(cameraManager.getCamera(), phoneRotation);
         }
     }
 
     private SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            camera = Camera.open(cameraId);
+            if (null == cameraManager) {
+                cameraManager = new MyCameraManager(onCameraEventListener);
+            }
+            cameraManager.previewFrontCamera(MediaRecordActivity.this, holder);
         }
 
         @Override
@@ -163,6 +162,31 @@ public class MediaRecordActivity extends AppCompatActivity {
 
         }
     };
+
+    private OnCameraEventListener onCameraEventListener = new OnCameraEventListener() {
+
+        @Override
+        public void onOpenCameraFailed() {
+            handler.sendEmptyMessage(MSG_OPEN_CAMERA_FAIL);
+        }
+
+        @Override
+        public void onPreviewSuccess() {
+            handler.sendEmptyMessage(MSG_PREVIEW_CAMERA_SUCCESS);
+        }
+
+        @Override
+        public void onPreviewFailed() {
+            handler.sendEmptyMessage(MSG_PREVIEW_CAMERA_FAIL);
+        }
+
+        @Override
+        public void onPictureTaken(byte[] data) {
+            LogUtil.i(TAG, "onPictureTaken() --- data.len = " + data.length);
+            // to save image file
+        }
+    };
+
 
     private SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
