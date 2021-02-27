@@ -13,6 +13,7 @@ import android.view.Surface;
 import com.cakes.utils.LogUtil;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class MediaCodecHelper {
 
@@ -35,30 +36,30 @@ public class MediaCodecHelper {
         format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxInputSize);
         format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelCount);
 
-        MediaCodec mediaCodec = null;
+        MediaCodec audioEncode = null;
         try {
-            mediaCodec = MediaCodec.createEncoderByType(mime);
+            audioEncode = MediaCodec.createEncoderByType(mime);
 
             // TODO: 使用异步方式的话，必须在configure()方法之前设置回调。
             if (null != mCallback) {
                 if (Build.VERSION.SDK_INT >= 23 && null != handler) {
                     LogUtil.d(TAG, "设置MediaCodec的异步方式：包含Handler");
-                    mediaCodec.setCallback(mCallback, handler);
+                    audioEncode.setCallback(mCallback, handler);
                 } else if (Build.VERSION.SDK_INT >= 21) {
                     LogUtil.d(TAG, "设置MediaCodec的异步方式：不 不 不包含Handler");
-                    mediaCodec.setCallback(mCallback);
+                    audioEncode.setCallback(mCallback);
                 }
             }
-            mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            audioEncode.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (Exception e) {
-            LogUtil.e(TAG, "get audio encoder mediaCodec is error: " + e.getMessage());
-            if (mediaCodec != null) {
-                mediaCodec.stop();
-                mediaCodec.release();
-                mediaCodec = null;
+            LogUtil.e(TAG, "get audio encoder audioEncode is error: " + e.getMessage());
+            if (audioEncode != null) {
+                audioEncode.stop();
+                audioEncode.release();
+                audioEncode = null;
             }
         }
-        return mediaCodec;
+        return audioEncode;
     }
 
     private static int getRecordBufferSize(int frequency, int channelCount, int audioEncoding) {
@@ -70,8 +71,38 @@ public class MediaCodecHelper {
         return size;
     }
 
-    public static MediaCodec getAudioDecoder() {
-        return null;
+    public static MediaCodec getAudioDecoder( String mine, int channelCount, int sampleRate) {
+        MediaCodec mDecoder = null;
+        try {
+            //需要解码数据的类型
+//            String mine = "audio/mp4a-latm";
+            //初始化解码器
+            mDecoder = MediaCodec.createDecoderByType(mine);
+            //MediaFormat用于描述音视频数据的相关参数
+            MediaFormat mediaFormat = new MediaFormat();
+            //数据类型
+            mediaFormat.setString(MediaFormat.KEY_MIME, mine);
+            //声道个数
+            mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelCount);
+            //采样率
+            mediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, sampleRate);
+            //比特率
+            mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 128000);
+            //用来标记AAC是否有adts头，1->有
+            mediaFormat.setInteger(MediaFormat.KEY_IS_ADTS, 1);
+            //用来标记aac的类型
+            mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+            //ByteBuffer key（暂时不了解该参数的含义，但必须设置）
+            byte[] data = new byte[]{(byte) 0x11, (byte) 0x90};
+            ByteBuffer csd_0 = ByteBuffer.wrap(data);
+            mediaFormat.setByteBuffer("csd-0", csd_0);
+            //解码器配置
+            mDecoder.configure(mediaFormat, null, null, 0);
+        } catch (Exception e) {
+            mDecoder = null;
+        }
+
+        return mDecoder;
     }
 
     public static MediaCodec getVideoEncoder(Surface surface) {

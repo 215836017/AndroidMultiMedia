@@ -35,8 +35,8 @@ public class AudioEncodeProcessor extends Thread {
     private int recordBufferSize;
     private byte[] mRecordBuffer;
 
-//    private AudioHardEncoder audioHardEncoder;
-    private AudioHardEncoder2 audioHardEncoder2;
+    private AudioHardEncoder audioHardEncoder;
+//    private AudioHardEncoder2 audioHardEncoder2;
 
     private boolean isAudioEncoding;
     /*** 是否静音 */
@@ -95,18 +95,18 @@ public class AudioEncodeProcessor extends Thread {
 
     private void initAudioEncoder(OnAudioEncodeListener onAudioEncodeListener) {
         if (null != onAudioEncodeListener) {
-//            audioHardEncoder = new AudioHardEncoder(onAudioEncodeListener);
-            audioHardEncoder2 = new AudioHardEncoder2(onAudioEncodeListener);
+            audioHardEncoder = new AudioHardEncoder(onAudioEncodeListener);
+//            audioHardEncoder2 = new AudioHardEncoder2(onAudioEncodeListener);
         } else {
-//            audioHardEncoder = new AudioHardEncoder();
-            audioHardEncoder2 = new AudioHardEncoder2();
+            audioHardEncoder = new AudioHardEncoder();
+//            audioHardEncoder2 = new AudioHardEncoder2();
         }
 
 
-//        audioHardEncoder.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
-//                DEFAULT_AAC_PROFILE, DEFAULT_BPS, DEFAULT_AUDIO_ENCODING);
-        audioHardEncoder2.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
+        audioHardEncoder.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
                 DEFAULT_AAC_PROFILE, DEFAULT_BPS, DEFAULT_AUDIO_ENCODING);
+//        audioHardEncoder2.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
+//                DEFAULT_AAC_PROFILE, DEFAULT_BPS, DEFAULT_AUDIO_ENCODING);
     }
 
     public int getSessionId() {
@@ -144,12 +144,12 @@ public class AudioEncodeProcessor extends Thread {
         }
         audioRecord = null;
 
-//        if (null != audioHardEncoder) {
-//            audioHardEncoder.stop();
-//        }
-        if (null != audioHardEncoder2) {
-            audioHardEncoder2.stop();
+        if (null != audioHardEncoder) {
+            audioHardEncoder.stop();
         }
+//        if (null != audioHardEncoder2) {
+//            audioHardEncoder2.stop();
+//        }
     }
 
     private void startRecord() {
@@ -183,12 +183,12 @@ public class AudioEncodeProcessor extends Thread {
                 Arrays.fill(mRecordBuffer, clearM);
             }
 
-//            if (null != audioHardEncoder) {
-//                audioHardEncoder.offerEncoder(mRecordBuffer);
-//            }
-            if (null != audioHardEncoder2) {
-                audioHardEncoder2.offerEncoder(mRecordBuffer);
+            if (null != audioHardEncoder) {
+                audioHardEncoder.offerEncoder(mRecordBuffer);
             }
+//            if (null != audioHardEncoder2) {
+//                audioHardEncoder2.offerEncoder(mRecordBuffer);
+//            }
         }
 
         releaseAudioRecord();

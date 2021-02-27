@@ -19,10 +19,10 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
 
     private final String TAG = "AudioEncodeResult";
 
-    private final String TEST_DIR_PATH = Environment.getExternalStorageDirectory()
+    public static final String TEST_DIR_PATH = Environment.getExternalStorageDirectory()
             + File.separator + "testCodec" + File.separator;
-    private final String FILE_AAC = "test.aac";
-    private final String FILE_PCM = "test.pcm";
+    public static final String FILE_AAC = "test.aac";
+    public static final String FILE_PCM = "test.pcm";
 
     private FileOutputStream fileOutputStream;
     private volatile long mStartedTime = 0;
@@ -82,11 +82,11 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
                 + ", mStartedTime = " + mStartedTime);
 
         // MediaCodec同步方式
-//        if (MediaCodec.BUFFER_FLAG_CODEC_CONFIG != info.flags
-//                && info.presentationTimeUs > mStartedTime) {
+        if (MediaCodec.BUFFER_FLAG_CODEC_CONFIG != info.flags
+                && info.presentationTimeUs > mStartedTime) {
 
-        // MediaCodec异步方式
-        if (MediaCodec.BUFFER_FLAG_CODEC_CONFIG != info.flags) {
+            // MediaCodec异步方式
+//        if (MediaCodec.BUFFER_FLAG_CODEC_CONFIG != info.flags) {
             try {
                 LogUtil.d(TAG, "onAudioEncode() -- 把编码的数据写入文件");
                 fileOutputStream.write(outData);
