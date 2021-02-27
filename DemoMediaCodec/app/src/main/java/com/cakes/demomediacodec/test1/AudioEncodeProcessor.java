@@ -22,7 +22,6 @@ public class AudioEncodeProcessor extends Thread {
     public static final boolean DEFAULT_AEC = true;
 
     public static final int DEFAULT_BPS = 32000;
-    public static final int DEFAULT_ADTS = 0;
     public static final String DEFAULT_MIME = "audio/mp4a-latm";
     public static final int DEFAULT_AAC_PROFILE = MediaCodecInfo.CodecProfileLevel.AACObjectLC;
 
@@ -39,8 +38,12 @@ public class AudioEncodeProcessor extends Thread {
     private boolean isMute;
 
     public AudioEncodeProcessor() {
+        this(null);
+    }
+
+    public AudioEncodeProcessor(OnAudioEncodeListener onAudioEncodeListener) {
         initAudioRecord();
-        initAudioEncoder();
+        initAudioEncoder(onAudioEncodeListener);
 
         isMute = false;
     }
@@ -85,8 +88,13 @@ public class AudioEncodeProcessor extends Thread {
         return size;
     }
 
-    private void initAudioEncoder() {
-        audioHardEncoder = new AudioHardEncoder();
+    private void initAudioEncoder(OnAudioEncodeListener onAudioEncodeListener) {
+        if (null != onAudioEncodeListener) {
+            audioHardEncoder = new AudioHardEncoder(onAudioEncodeListener);
+        } else {
+            audioHardEncoder = new AudioHardEncoder();
+        }
+
         audioHardEncoder.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
                 DEFAULT_AAC_PROFILE, DEFAULT_BPS, DEFAULT_AUDIO_ENCODING);
     }

@@ -20,6 +20,7 @@ public class AudioEncodeActivity extends BaseActivity {
     private Button btnEncodeAudio;
 
     private AudioEncodeProcessor audioEncodeProcessor;
+    private OnAudioEncodeListener onAudioEncodeListener;
 
     private boolean isEncoding;
     private int timeCount;
@@ -47,7 +48,8 @@ public class AudioEncodeActivity extends BaseActivity {
 
         initViews();
 
-        audioEncodeProcessor = new AudioEncodeProcessor();
+        onAudioEncodeListener = new AudioEncodeResult();
+        audioEncodeProcessor = new AudioEncodeProcessor(onAudioEncodeListener);
     }
 
     @Override

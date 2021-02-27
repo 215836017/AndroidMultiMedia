@@ -20,8 +20,13 @@ public class AudioHardEncoder {
     private MediaCodec.BufferInfo mBufferInfo = new MediaCodec.BufferInfo();
     private ByteBuffer outputBuffer;
 
-    public AudioHardEncoder() {
+    private OnAudioEncodeListener onAudioEncodeListener;
 
+    public AudioHardEncoder() {
+    }
+
+    public AudioHardEncoder(OnAudioEncodeListener onAudioEncodeListener) {
+        this.onAudioEncodeListener = onAudioEncodeListener;
     }
 
     public void prepareEncoder(String mime, int frequency, int channelCount,
@@ -32,7 +37,6 @@ public class AudioHardEncoder {
     }
 
     synchronized public void stop() {
-
         if (mMediaCodec != null) {
             mMediaCodec.stop();
             mMediaCodec.release();
@@ -74,10 +78,10 @@ public class AudioHardEncoder {
                 outputBuffer = mMediaCodec.getOutputBuffers()[outputBufferIndex];
             }
 
-            LogUtil.i(TAG, "编码音频完成...");
-//            if (mListener != null) {
-//                mListener.onAudioEncode(outputBuffer, mBufferInfo);
-//            }
+//            LogUtil.i(TAG, "编码音频完成...");
+            if (onAudioEncodeListener != null) {
+                onAudioEncodeListener.onAudioEncode(outputBuffer, mBufferInfo);
+            }
             mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);
             outputBufferIndex = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 0);
         }
