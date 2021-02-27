@@ -1,5 +1,7 @@
 package com.cakes.demomediacodec.mediaCodec;
 
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
@@ -10,9 +12,53 @@ import com.cakes.utils.LogUtil;
 
 import java.io.IOException;
 
-public class VideoMediaCodec {
+public class MediaCodecHelper {
 
-    private static final String TAG = "VideoMediaCodec";
+    private static final String TAG = "MediaCodecHelper";
+    private static final String AUDIO_DEFAULT_MIME = "audio/mp4a-latm";
+
+    public static MediaCodec getAudioEncoder(String mime, int frequency, int channelCount,
+                                             int aacProfile, int bps, int audioEncoding) {
+        LogUtil.d(TAG, "getAudioMediaCodec() -- mime = " + mime);
+        MediaFormat format = MediaFormat.createAudioFormat(mime,
+                frequency, channelCount);
+
+        if (mime.equals(AUDIO_DEFAULT_MIME)) {
+            format.setInteger(MediaFormat.KEY_AAC_PROFILE, aacProfile);
+        }
+        format.setInteger(MediaFormat.KEY_BIT_RATE, bps);
+        format.setInteger(MediaFormat.KEY_SAMPLE_RATE, frequency);
+        int maxInputSize = getRecordBufferSize(frequency, channelCount, audioEncoding);
+        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxInputSize);
+        format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelCount);
+
+        MediaCodec mediaCodec = null;
+        try {
+            mediaCodec = MediaCodec.createEncoderByType(mime);
+            mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        } catch (Exception e) {
+            LogUtil.e(TAG, "get audio encoder mediaCodec is error: " + e.getMessage());
+            if (mediaCodec != null) {
+                mediaCodec.stop();
+                mediaCodec.release();
+                mediaCodec = null;
+            }
+        }
+        return mediaCodec;
+    }
+
+    private static int getRecordBufferSize(int frequency, int channelCount, int audioEncoding) {
+        int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+        if (channelCount == 2) {
+            channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
+        }
+        int size = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
+        return size;
+    }
+
+    public static MediaCodec getAudioDecoder() {
+        return null;
+    }
 
     public static MediaCodec getVideoEncoder(Surface surface) {
         LogUtil.d(TAG, "视频h264编码器() -- 1111");
@@ -89,6 +135,4 @@ public class VideoMediaCodec {
         LogUtil.i(TAG, "chooseCodec() -- 3333333333");
         return null;
     }
-
-
 }

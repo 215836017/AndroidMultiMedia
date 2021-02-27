@@ -1,0 +1,3 @@
+﻿1. MediaCodec  -- 同步， 异步
+
+2. ADTS -- ADTS全称是(Audio Data Transport Stream)，是AAC的一种十分常见的传输格式。

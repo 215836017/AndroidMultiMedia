@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,12 +7,21 @@
     android:orientation="vertical"
     tools:context=".test1.AudioEncodeActivity">
 
-    <Button
-        android:id="@+id/audio_en_start"
+    <TextView
+        android:id="@+id/audio_encode_text_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_margin="30dp"
+        android:gravity="center_horizontal"
+        android:textColor="#f00"
+        android:textSize="30dp"
+        tools:text="3:00" />
+
+    <Button
+        android:id="@+id/audio_encode_btn_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:text="录音并编码"
         android:textSize="40dp" />
-</RelativeLayout>
+</LinearLayout>
