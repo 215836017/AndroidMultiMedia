@@ -126,7 +126,7 @@ public class AudioDecodeProcessor extends Thread {
 
                                 // todo
                                 LogUtil.d(TAG, "read aac file -- 22222, to decode aac");
-                                audioHardDecoder.offerEncoder(frame, headFirstIndex, headSecondIndex - headFirstIndex);
+                                audioHardDecoder.offerDecoder(frame, headFirstIndex, headSecondIndex - headFirstIndex);
 //                                audioHardDecoder.offerEncoder(frame);
                                 //截取headSecondIndex之后到frame的有效数据,并放到frame最前面
                                 byte[] temp = Arrays.copyOfRange(frame, headSecondIndex, frameLen);

@@ -46,7 +46,7 @@ public class AudioHardDecoder {
         }
     }
 
-    synchronized void offerEncoder(byte[] input, int offset, int length) {
+    synchronized void offerDecoder(byte[] input, int offset, int length) {
         if (null == mediaCodec) {
             return;
         }
@@ -72,9 +72,9 @@ public class AudioHardDecoder {
                 + ", info.offset = " + bufferInfo.offset);
         while (outputBufferIndex >= 0) {
             if (Build.VERSION.SDK_INT >= 21) {
-                inputBuffer = mediaCodec.getOutputBuffer(outputBufferIndex);
+                outputBuffer = mediaCodec.getOutputBuffer(outputBufferIndex);
             } else {
-                inputBuffer = mediaCodec.getOutputBuffers()[outputBufferIndex];
+                outputBuffer = mediaCodec.getOutputBuffers()[outputBufferIndex];
             }
             LogUtil.i(TAG, "音频解码完成...");
             if (onAudioDecodeListener != null) {

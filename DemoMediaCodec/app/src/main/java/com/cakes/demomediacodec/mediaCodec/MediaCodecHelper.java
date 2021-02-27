@@ -71,7 +71,7 @@ public class MediaCodecHelper {
         return size;
     }
 
-    public static MediaCodec getAudioDecoder( String mine, int channelCount, int sampleRate) {
+    public static MediaCodec getAudioDecoder(String mine, int channelCount, int sampleRate) {
         MediaCodec mDecoder = null;
         try {
             //需要解码数据的类型
@@ -96,6 +96,26 @@ public class MediaCodecHelper {
             byte[] data = new byte[]{(byte) 0x11, (byte) 0x90};
             ByteBuffer csd_0 = ByteBuffer.wrap(data);
             mediaFormat.setByteBuffer("csd-0", csd_0);
+            //解码器配置
+            mDecoder.configure(mediaFormat, null, null, 0);
+        } catch (Exception e) {
+            mDecoder = null;
+        }
+
+        return mDecoder;
+    }
+
+    public static MediaCodec getAudioDecoder(MediaFormat mediaFormat) {
+        if (null == mediaFormat) {
+            return null;
+        }
+
+        MediaCodec mDecoder = null;
+        try {
+            //初始化解码器
+            String mediaMime = mediaFormat.getString(MediaFormat.KEY_MIME);
+            LogUtil.i(TAG, "getAudioDecoder() -- mediaMime = " + mediaMime);
+            mDecoder = MediaCodec.createDecoderByType(mediaMime);
             //解码器配置
             mDecoder.configure(mediaFormat, null, null, 0);
         } catch (Exception e) {
