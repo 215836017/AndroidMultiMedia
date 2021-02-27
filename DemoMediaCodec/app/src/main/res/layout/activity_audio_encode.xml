@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AudioEncodeActivity">
+    tools:context=".test1.AudioEncodeActivity">
 
     <Button
-        android:id="@+id/en_audio_start"
+        android:id="@+id/audio_en_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_margin="20dp"
-        android:text="开始音频编码"
+        android:text="录音并编码"
         android:textSize="40dp" />
 </RelativeLayout>

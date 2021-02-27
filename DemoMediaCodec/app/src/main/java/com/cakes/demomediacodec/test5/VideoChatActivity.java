@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec;
+package com.cakes.demomediacodec.test5;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +22,7 @@ import com.cakes.demomediacodec.test.MediaCodecUtil;
 import com.cakes.utils.LogUtil;
 
 /**
+ * 使用旧的Camera API
  * https://github.com/sszhangpengfei/MediaCodecEncodeH264
  * https://blog.csdn.net/a512337862/article/details/72629779
  */

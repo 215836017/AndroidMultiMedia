@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".VideoDecodeActivity">
+    tools:context=".test4.VideoDecodeActivity">
 
     <SurfaceView
         android:id="@+id/video_decode_surface"
@@ -18,6 +18,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
-        android:text="创建视频解码器"
+        android:text="解码并播放视频"
         android:textSize="40dp" />
 </RelativeLayout>

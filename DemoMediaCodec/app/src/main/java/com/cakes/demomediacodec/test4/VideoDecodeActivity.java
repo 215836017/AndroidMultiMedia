@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec;
+package com.cakes.demomediacodec.test4;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -12,6 +12,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cakes.demomediacodec.R;
 import com.cakes.utils.LogUtil;
 
 import java.io.IOException;

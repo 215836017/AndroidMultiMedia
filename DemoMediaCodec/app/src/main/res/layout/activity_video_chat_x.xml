@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".test2.AudioDecodeActivity">
+    tools:context=".test7.VideoChatActivityX">
 
-    <Button
-        android:id="@+id/play_h264_file"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="播放H264文件" />
 </androidx.constraintlayout.widget.ConstraintLayout>

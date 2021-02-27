@@ -1,8 +1,10 @@
-package com.cakes.demomediacodec;
+package com.cakes.demomediacodec.test3;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.cakes.demomediacodec.R;
 
 public class VideoEncodeActivity extends AppCompatActivity {
 

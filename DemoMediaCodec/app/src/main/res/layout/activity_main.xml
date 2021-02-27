@@ -50,5 +50,29 @@
             android:layout_margin="20dp"
             android:onClick="mainBtnClick"
             android:text="双向音视频" />
+
+        <Button
+            android:id="@+id/btn_video_chat2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:onClick="mainBtnClick"
+            android:text="双向音视频-使用Camera2" />
+
+        <Button
+            android:id="@+id/btn_video_chatX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:onClick="mainBtnClick"
+            android:text="双向音视频-使用CameraX" />
+
+        <Button
+            android:id="@+id/btn_video_chat_opengl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:onClick="mainBtnClick"
+            android:text="双向音视频-使用openGL" />
     </LinearLayout>
 </ScrollView>

@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -19,11 +18,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
-        <activity android:name=".VideoEncodeActivity" />
-        <activity android:name=".AudioDecodeActivity" />
-        <activity android:name=".AudioEncodeActivity" />
-        <activity android:name=".VideoChatActivity">
+
+        <activity android:name=".test8.VideoChatOpenGLActivity" />
+        <activity android:name=".test7.VideoChatActivityX" />
+        <activity android:name=".test6.VideoChatActivity2" />
+        <activity android:name=".test5.VideoChatActivity" />
+        <activity android:name=".test4.VideoDecodeActivity" />
+        <activity android:name=".test3.VideoEncodeActivity" />
+        <activity android:name=".test2.AudioDecodeActivity" />
+        <activity android:name=".test1.AudioEncodeActivity" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

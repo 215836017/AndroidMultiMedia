@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec;
+package com.cakes.demomediacodec.test1;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -13,6 +13,8 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cakes.demomediacodec.MyMediaCodecCallback;
+import com.cakes.demomediacodec.R;
 import com.cakes.demomediacodec.audio.PcmToWavUtil;
 import com.cakes.utils.LogUtil;
 
@@ -46,7 +48,7 @@ public class AudioEncodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_encode);
 
-        btnEncodeAudio = findViewById(R.id.en_audio_start);
+        btnEncodeAudio = findViewById(R.id.audio_en_start);
         btnEncodeAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
