@@ -25,6 +25,7 @@ public class AudioDecodeActivity extends AppCompatActivity {
     }
 
     private void testDecode() {
-
+        AudioDecodeProcessor audioDecodeProcessor = new AudioDecodeProcessor();
+        audioDecodeProcessor.run();
     }
 }

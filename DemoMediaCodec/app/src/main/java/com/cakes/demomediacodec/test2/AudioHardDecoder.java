@@ -15,13 +15,27 @@ public class AudioHardDecoder {
     private MediaCodec mediaCodec;
     private OnAudioDecodeListener onAudioDecodeListener;
 
-    public AudioHardDecoder() {
+    private ByteBuffer inputBuffer = null;
+    private ByteBuffer outputBuffer = null;
+    private int inputBufferIndex;
+    private int outputBufferIndex;
+    private MediaCodec.BufferInfo bufferInfo;
 
+    public AudioHardDecoder() {
     }
 
-    public void initDecoder(String mine, int channelCount, int sampleRate) {
+    public AudioHardDecoder(OnAudioDecodeListener onAudioDecodeListener) {
+        this.onAudioDecodeListener = onAudioDecodeListener;
+    }
+
+    public void prepareDecoder(String mine, int channelCount, int sampleRate) {
         mediaCodec = MediaCodecHelper.getAudioDecoder(mine, channelCount, sampleRate);
+        if (null == mediaCodec) {
+            LogUtil.e(TAG, "prepareDecoder() -- error: null == mediaCodec");
+            return;
+        }
         mediaCodec.start();
+        LogUtil.i(TAG, "prepareDecoder() -- call mediaCodec.start() success");
     }
 
     synchronized public void stop() {
@@ -32,13 +46,7 @@ public class AudioHardDecoder {
         }
     }
 
-    private ByteBuffer inputBuffer = null;
-    private ByteBuffer outputBuffer = null;
-    private int inputBufferIndex;
-    private int outputBufferIndex;
-    private MediaCodec.BufferInfo bufferInfo;
-
-    synchronized void offerEncoder(byte[] input) {
+    synchronized void offerEncoder(byte[] input, int offset, int length) {
         if (null == mediaCodec) {
             return;
         }
@@ -52,7 +60,7 @@ public class AudioHardDecoder {
             }
 
             inputBuffer.clear();
-            inputBuffer.put(input);
+            inputBuffer.put(input, offset, length);
             long pts = System.nanoTime() / 1000;
             mediaCodec.queueInputBuffer(inputBufferIndex, 0, input.length, pts, 0);
         }

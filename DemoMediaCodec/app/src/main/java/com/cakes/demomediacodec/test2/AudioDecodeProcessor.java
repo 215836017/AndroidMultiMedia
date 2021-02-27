@@ -27,6 +27,7 @@ public class AudioDecodeProcessor extends Thread {
 
     //文件路径
     private String filePath;
+    private FileInputStream fis;
     //文件读取完成标识
     private boolean isFinish = false;
     //这个值用于找到第一个帧头后，继续寻找第二个帧头，如果解码失败可以尝试缩小这个值
@@ -39,28 +40,46 @@ public class AudioDecodeProcessor extends Thread {
     private int count = 0;
 
     private AudioHardDecoder audioHardDecoder;
+    private AudioDecodeResult audioDecodeResult;
 
     public AudioDecodeProcessor() {
         initAudioDecoder();
 
         filePath = AudioEncodeResult.TEST_DIR_PATH + AudioEncodeResult.FILE_AAC;
+        LogUtil.i(TAG, "AudioDecodeProcessor() -- filePath = " + filePath);
     }
 
     private void initAudioDecoder() {
+        if (null == audioDecodeResult) {
+            audioDecodeResult = new AudioDecodeResult(DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
+                    DEFAULT_AUDIO_ENCODING);
+            LogUtil.i(TAG, "initAudioDecoder() -- 11111, init AudioDecodeResult end");
+        }
         if (null == audioHardDecoder) {
-            audioHardDecoder = new AudioHardDecoder();
-            audioHardDecoder.initDecoder(DEFAULT_MIME, DEFAULT_CHANNEL_COUNT, DEFAULT_FREQUENCY);
+            audioHardDecoder = new AudioHardDecoder(audioDecodeResult);
+            audioHardDecoder.prepareDecoder(DEFAULT_MIME, DEFAULT_CHANNEL_COUNT, DEFAULT_FREQUENCY);
+            LogUtil.i(TAG, "initAudioDecoder() -- 2222 audioHardDecoder.prepareDecoder() end");
         }
     }
 
     private void release() {
+        LogUtil.d(TAG, "release() -- 11111111");
+        if (null != audioHardDecoder) {
+            audioHardDecoder.stop();
+        }
 
+        if (null != fis) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void stopDecode() {
-
+        isFinish = true;
     }
-
 
     @Override
     public void run() {
@@ -82,7 +101,8 @@ public class AudioDecodeProcessor extends Thread {
         long startTime = System.currentTimeMillis();
         int readLen;
         try {
-            FileInputStream fis = new FileInputStream(file);
+            fis = new FileInputStream(file);
+            LogUtil.d(TAG, "start to read aac file..");
             while (!isFinish) {
                 if (fis.available() > 0) {
                     readLen = fis.read(readData);
@@ -94,6 +114,7 @@ public class AudioDecodeProcessor extends Thread {
                         frameLen += readLen;
                         //寻找第一个帧头
                         int headFirstIndex = findHead(frame, 0, frameLen);
+                        LogUtil.d(TAG, "read aac file -- 11111, headFirstIndex = " + headFirstIndex);
                         while (headFirstIndex >= 0 && isHead(frame, headFirstIndex)) {
                             //寻找第二个帧头
                             int headSecondIndex = findHead(frame, headFirstIndex + FRAME_MIN_LEN, frameLen);
@@ -104,7 +125,9 @@ public class AudioDecodeProcessor extends Thread {
                                 LogUtil.e(TAG, "Length : " + (headSecondIndex - headFirstIndex));
 
                                 // todo
-//                                audioUtil.decode(frame, headFirstIndex, headSecondIndex - headFirstIndex);
+                                LogUtil.d(TAG, "read aac file -- 22222, to decode aac");
+                                audioHardDecoder.offerEncoder(frame, headFirstIndex, headSecondIndex - headFirstIndex);
+//                                audioHardDecoder.offerEncoder(frame);
                                 //截取headSecondIndex之后到frame的有效数据,并放到frame最前面
                                 byte[] temp = Arrays.copyOfRange(frame, headSecondIndex, frameLen);
                                 System.arraycopy(temp, 0, frame, 0, temp.length);
@@ -124,9 +147,17 @@ public class AudioDecodeProcessor extends Thread {
                     } else {
                         //如果长度超过最大值，frameLen置0
                         frameLen = 0;
+                        LogUtil.d(TAG, "read aac file -- 3333, frameLen = 0");
                     }
+                } else {
+                    //文件读取结束
+                    isFinish = true;
+                    LogUtil.d(TAG, "read aac file -- 3333, isFinish = true");
                 }
             }
+
+            release();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -165,6 +196,7 @@ public class AudioDecodeProcessor extends Thread {
                 && data[offset + 3] == (byte) 0x80) {
             result = true;
         }
+        LogUtil.i(TAG, "isHead() -- result = " + result);
         return result;
     }
 
