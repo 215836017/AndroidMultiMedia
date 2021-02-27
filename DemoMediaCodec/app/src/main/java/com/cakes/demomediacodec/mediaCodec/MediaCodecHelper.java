@@ -38,10 +38,14 @@ public class MediaCodecHelper {
         MediaCodec mediaCodec = null;
         try {
             mediaCodec = MediaCodec.createEncoderByType(mime);
+
+            // TODO: 使用异步方式的话，必须在configure()方法之前设置回调。
             if (null != mCallback) {
                 if (Build.VERSION.SDK_INT >= 23 && null != handler) {
+                    LogUtil.d(TAG, "设置MediaCodec的异步方式：包含Handler");
                     mediaCodec.setCallback(mCallback, handler);
                 } else if (Build.VERSION.SDK_INT >= 21) {
+                    LogUtil.d(TAG, "设置MediaCodec的异步方式：不 不 不包含Handler");
                     mediaCodec.setCallback(mCallback);
                 }
             }

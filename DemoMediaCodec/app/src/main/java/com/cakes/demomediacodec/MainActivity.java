@@ -16,6 +16,7 @@ import com.cakes.demomediacodec.test8.VideoChatOpenGLActivity;
 /**
  * https://www.jianshu.com/p/7cdf5b495ada
  * https://blog.csdn.net/qq_17441227/article/details/82893445
+ * https://zhuanlan.zhihu.com/p/268441151
  */
 public class MainActivity extends BaseActivity {
 

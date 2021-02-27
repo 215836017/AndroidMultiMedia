@@ -1,5 +1,6 @@
 package com.cakes.demomediacodec.test1;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,10 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.cakes.demomediacodec.BaseActivity;
 import com.cakes.demomediacodec.R;
 
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class AudioEncodeActivity extends BaseActivity {
 
     private final String TAG = "AudioEncodeActivity";
@@ -40,6 +43,7 @@ public class AudioEncodeActivity extends BaseActivity {
             }
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

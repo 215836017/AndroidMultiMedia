@@ -65,6 +65,10 @@ public class AudioHardEncoder {
         }
 
         int outputBufferIndex = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 12000);
+        LogUtil.w(TAG, "onOutputBufferAvailable() -- 1111111, index = " + outputBufferIndex
+                + ", info.size = " + mBufferInfo.size + ", info.flags = " + mBufferInfo.flags
+                + ", info.presentationTimeUs = " + mBufferInfo.presentationTimeUs
+                + ", info.offset = " + mBufferInfo.offset);
 //        if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED && mListener != null) {
 //            mListener.onAudioFormatChanged(mMediaCodec.getOutputFormat());
 //        }

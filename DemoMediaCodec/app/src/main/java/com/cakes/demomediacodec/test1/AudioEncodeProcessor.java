@@ -35,7 +35,7 @@ public class AudioEncodeProcessor extends Thread {
     private int recordBufferSize;
     private byte[] mRecordBuffer;
 
-    private AudioHardEncoder audioHardEncoder;
+//    private AudioHardEncoder audioHardEncoder;
     private AudioHardEncoder2 audioHardEncoder2;
 
     private boolean isAudioEncoding;
@@ -144,9 +144,9 @@ public class AudioEncodeProcessor extends Thread {
         }
         audioRecord = null;
 
-        if (null != audioHardEncoder) {
-            audioHardEncoder.stop();
-        }
+//        if (null != audioHardEncoder) {
+//            audioHardEncoder.stop();
+//        }
         if (null != audioHardEncoder2) {
             audioHardEncoder2.stop();
         }
@@ -183,9 +183,9 @@ public class AudioEncodeProcessor extends Thread {
                 Arrays.fill(mRecordBuffer, clearM);
             }
 
-            if (null != audioHardEncoder) {
-                audioHardEncoder.offerEncoder(mRecordBuffer);
-            }
+//            if (null != audioHardEncoder) {
+//                audioHardEncoder.offerEncoder(mRecordBuffer);
+//            }
             if (null != audioHardEncoder2) {
                 audioHardEncoder2.offerEncoder(mRecordBuffer);
             }

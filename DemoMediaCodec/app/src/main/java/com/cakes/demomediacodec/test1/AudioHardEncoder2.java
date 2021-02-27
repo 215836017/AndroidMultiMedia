@@ -14,6 +14,7 @@ import com.cakes.utils.LogUtil;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * MediaCodec 的异步方式
@@ -25,7 +26,6 @@ public class AudioHardEncoder2 {
 
     private MediaCodec mMediaCodec;
     private MediaCodec.BufferInfo mBufferInfo = new MediaCodec.BufferInfo();
-    private ByteBuffer outputBuffer;
 
     private OnAudioEncodeListener onAudioEncodeListener;
 
@@ -34,7 +34,6 @@ public class AudioHardEncoder2 {
 
     private final int CACHE_BUFFER_SIZE = 10;
     private final ArrayBlockingQueue<byte[]> mInputDatasQueue = new ArrayBlockingQueue<byte[]>(CACHE_BUFFER_SIZE);
-    private ByteBuffer inputBuffer;
     private byte[] dataSources;
 
     public AudioHardEncoder2() {
@@ -56,12 +55,6 @@ public class AudioHardEncoder2 {
                                int aacProfile, int bps, int audioEncoding) {
         mMediaCodec = MediaCodecHelper.getAudioEncoder(mime, frequency, channelCount,
                 aacProfile, bps, audioEncoding, mCallback, audioEncoderHandler);
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            mMediaCodec.setCallback(mCallback, audioEncoderHandler);
-//
-//        } else if (Build.VERSION.SDK_INT >= 21) {
-//            mMediaCodec.setCallback(mCallback);
-//        }
         mMediaCodec.start();
         LogUtil.d(TAG, "prepareEncoder() -- 编码器开启成功...");
     }
@@ -79,25 +72,43 @@ public class AudioHardEncoder2 {
         mInputDatasQueue.offer(input);
     }
 
+    int len = 0;
     private MediaCodec.Callback mCallback = new MediaCodec.Callback() {
         @Override
         public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
-            LogUtil.d(TAG, "onInputBufferAvailable() -- 1111111");
-            inputBuffer = codec.getInputBuffer(index);
-            inputBuffer.clear();
-            dataSources = mInputDatasQueue.poll();
-            if (dataSources != null) {
-                inputBuffer.put(dataSources);
-                codec.queueInputBuffer(index, 0, dataSources.length, 0, 0);
+            LogUtil.d(TAG, "onInputBufferAvailable() -- 1111111, index = " + index);
+
+            while (dataSources == null) {
+                try {
+                    dataSources = mInputDatasQueue.poll(20, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+                    LogUtil.d(TAG, "onInputBufferAvailable() -- " + e.getMessage());
+                    dataSources = null;
+                }
             }
+
+            if (index < 0) {
+                return;
+            }
+
+            ByteBuffer inputBuffer = mMediaCodec.getInputBuffer(index);
+            inputBuffer.clear();
+            inputBuffer.put(dataSources);
+            len = dataSources.length;
+            mMediaCodec.queueInputBuffer(index, 0, len, 0, 0);
         }
 
         @Override
         public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index,
                                             @NonNull MediaCodec.BufferInfo info) {
-            LogUtil.w(TAG, "onOutputBufferAvailable() -- 1111111");
-            outputBuffer = codec.getOutputBuffer(index);
+//            LogUtil.w(TAG, "onOutputBufferAvailable() -- 1111111, index = " + index);
+            if (index < 0 || null == mMediaCodec) {
+                return;
+            }
+            ByteBuffer outputBuffer = mMediaCodec.getOutputBuffer(index);
             if (null != onAudioEncodeListener) {
+//                LogUtil.i(TAG, "onOutputBufferAvailable() -- 222222");
                 onAudioEncodeListener.onAudioEncode(outputBuffer, info);
             }
             mMediaCodec.releaseOutputBuffer(index, true);

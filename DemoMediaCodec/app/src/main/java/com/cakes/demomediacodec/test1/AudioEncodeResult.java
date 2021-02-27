@@ -7,6 +7,7 @@ import android.os.Environment;
 import com.cakes.utils.LogUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,7 +30,6 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
     private final int ADTSSize = 7;
     private int outPacketSize;
     private byte[] outData;
-    private int pts;
 
     public AudioEncodeResult() {
         initFile();
@@ -50,16 +50,21 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
 
             try {
                 file.createNewFile();
-                fileOutputStream = new FileOutputStream(file);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        try {
+            fileOutputStream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public void onAudioEncode(ByteBuffer buffer, MediaCodec.BufferInfo info) {
-
+        LogUtil.d(TAG, "onAudioEncode() -- 11111111111");
         if (null == fileOutputStream) {
             return;
         }
@@ -70,13 +75,18 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
         buffer.limit(info.offset + info.size);
         AudioHardEncoder.addADTStoPacket(outData, outPacketSize);
         buffer.get(outData, ADTSSize, info.size);
+        LogUtil.d(TAG, "onAudioEncode() -- 222222222, info.flags = " + info.flags
+                + ", info.presentationTimeUs = " + info.presentationTimeUs
+                + ", info.size = " + info.size
+                + ", info.offset = " + info.offset
+                + ", mStartedTime = " + mStartedTime);
 
-        if (MediaCodec.BUFFER_FLAG_CODEC_CONFIG != info.flags
-                && info.presentationTimeUs > mStartedTime) {
-            pts = (int) (info.presentationTimeUs - mStartedTime) / 1000;
-//            LogUtil.i(TAG, "audio pts = " + pts + ",mStartedTime = " + mStartedTime
-//                    + ",ms = " + info.presentationTimeUs + ",size = " + info.size
-//                    + ",flag = " + info.flags);
+        // MediaCodec同步方式
+//        if (MediaCodec.BUFFER_FLAG_CODEC_CONFIG != info.flags
+//                && info.presentationTimeUs > mStartedTime) {
+
+        // MediaCodec异步方式
+        if (MediaCodec.BUFFER_FLAG_CODEC_CONFIG != info.flags) {
             try {
                 LogUtil.d(TAG, "onAudioEncode() -- 把编码的数据写入文件");
                 fileOutputStream.write(outData);
