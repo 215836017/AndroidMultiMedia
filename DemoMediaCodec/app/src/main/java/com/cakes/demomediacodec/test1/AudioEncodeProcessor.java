@@ -6,12 +6,16 @@ import android.media.MediaCodecInfo;
 import android.media.MediaRecorder;
 import android.media.audiofx.AcousticEchoCanceler;
 import android.media.audiofx.AutomaticGainControl;
+import android.os.Build;
 import android.os.Process;
+
+import androidx.annotation.RequiresApi;
 
 import com.cakes.utils.LogUtil;
 
 import java.util.Arrays;
 
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class AudioEncodeProcessor extends Thread {
 
     private final String TAG = "AudioEncodeProcessor";
@@ -32,6 +36,7 @@ public class AudioEncodeProcessor extends Thread {
     private byte[] mRecordBuffer;
 
     private AudioHardEncoder audioHardEncoder;
+    private AudioHardEncoder2 audioHardEncoder2;
 
     private boolean isAudioEncoding;
     /*** 是否静音 */
@@ -90,12 +95,17 @@ public class AudioEncodeProcessor extends Thread {
 
     private void initAudioEncoder(OnAudioEncodeListener onAudioEncodeListener) {
         if (null != onAudioEncodeListener) {
-            audioHardEncoder = new AudioHardEncoder(onAudioEncodeListener);
+//            audioHardEncoder = new AudioHardEncoder(onAudioEncodeListener);
+            audioHardEncoder2 = new AudioHardEncoder2(onAudioEncodeListener);
         } else {
-            audioHardEncoder = new AudioHardEncoder();
+//            audioHardEncoder = new AudioHardEncoder();
+            audioHardEncoder2 = new AudioHardEncoder2();
         }
 
-        audioHardEncoder.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
+
+//        audioHardEncoder.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
+//                DEFAULT_AAC_PROFILE, DEFAULT_BPS, DEFAULT_AUDIO_ENCODING);
+        audioHardEncoder2.prepareEncoder(DEFAULT_MIME, DEFAULT_FREQUENCY, DEFAULT_CHANNEL_COUNT,
                 DEFAULT_AAC_PROFILE, DEFAULT_BPS, DEFAULT_AUDIO_ENCODING);
     }
 
@@ -137,6 +147,9 @@ public class AudioEncodeProcessor extends Thread {
         if (null != audioHardEncoder) {
             audioHardEncoder.stop();
         }
+        if (null != audioHardEncoder2) {
+            audioHardEncoder2.stop();
+        }
     }
 
     private void startRecord() {
@@ -172,6 +185,9 @@ public class AudioEncodeProcessor extends Thread {
 
             if (null != audioHardEncoder) {
                 audioHardEncoder.offerEncoder(mRecordBuffer);
+            }
+            if (null != audioHardEncoder2) {
+                audioHardEncoder2.offerEncoder(mRecordBuffer);
             }
         }
 

@@ -20,7 +20,7 @@ public class AudioEncodeActivity extends BaseActivity {
     private Button btnEncodeAudio;
 
     private AudioEncodeProcessor audioEncodeProcessor;
-    private OnAudioEncodeListener onAudioEncodeListener;
+    private AudioEncodeResult onAudioEncodeListener;
 
     private boolean isEncoding;
     private int timeCount;
@@ -58,6 +58,10 @@ public class AudioEncodeActivity extends BaseActivity {
         if (null != audioEncodeProcessor) {
             audioEncodeProcessor.stopEncode();
             audioEncodeProcessor = null;
+        }
+
+        if (null != onAudioEncodeListener) {
+            onAudioEncodeListener.release();
         }
     }
 

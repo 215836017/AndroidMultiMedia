@@ -32,7 +32,7 @@ public class AudioHardEncoder {
     public void prepareEncoder(String mime, int frequency, int channelCount,
                                int aacProfile, int bps, int audioEncoding) {
         mMediaCodec = MediaCodecHelper.getAudioEncoder(mime, frequency, channelCount,
-                aacProfile, bps, audioEncoding);
+                aacProfile, bps, audioEncoding, null, null);
         mMediaCodec.start();
     }
 

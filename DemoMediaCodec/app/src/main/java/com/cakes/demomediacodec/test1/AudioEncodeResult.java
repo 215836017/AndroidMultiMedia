@@ -4,11 +4,16 @@ import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.os.Environment;
 
+import com.cakes.utils.LogUtil;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+/**
+ * https://blog.csdn.net/zjfengdou30/article/details/81276154
+ */
 public class AudioEncodeResult implements OnAudioEncodeListener {
 
     private final String TAG = "AudioEncodeResult";
@@ -50,7 +55,6 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
                 e.printStackTrace();
             }
         }
-
     }
 
     @Override
@@ -74,6 +78,7 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
 //                    + ",ms = " + info.presentationTimeUs + ",size = " + info.size
 //                    + ",flag = " + info.flags);
             try {
+                LogUtil.d(TAG, "onAudioEncode() -- 把编码的数据写入文件");
                 fileOutputStream.write(outData);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -89,5 +94,15 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
     public void onAudioPCM(byte[] data, int len) {
     }
 
-
+    public void release() {
+        if (null != fileOutputStream) {
+            try {
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                fileOutputStream = null;
+            }
+        }
+    }
 }

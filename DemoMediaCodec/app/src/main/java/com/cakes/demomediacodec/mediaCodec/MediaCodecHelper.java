@@ -6,6 +6,8 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
+import android.os.Build;
+import android.os.Handler;
 import android.view.Surface;
 
 import com.cakes.utils.LogUtil;
@@ -18,7 +20,8 @@ public class MediaCodecHelper {
     private static final String AUDIO_DEFAULT_MIME = "audio/mp4a-latm";
 
     public static MediaCodec getAudioEncoder(String mime, int frequency, int channelCount,
-                                             int aacProfile, int bps, int audioEncoding) {
+                                             int aacProfile, int bps, int audioEncoding,
+                                             MediaCodec.Callback mCallback, Handler handler) {
         LogUtil.d(TAG, "getAudioMediaCodec() -- mime = " + mime);
         MediaFormat format = MediaFormat.createAudioFormat(mime,
                 frequency, channelCount);
@@ -35,6 +38,13 @@ public class MediaCodecHelper {
         MediaCodec mediaCodec = null;
         try {
             mediaCodec = MediaCodec.createEncoderByType(mime);
+            if (null != mCallback) {
+                if (Build.VERSION.SDK_INT >= 23 && null != handler) {
+                    mediaCodec.setCallback(mCallback, handler);
+                } else if (Build.VERSION.SDK_INT >= 21) {
+                    mediaCodec.setCallback(mCallback);
+                }
+            }
             mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (Exception e) {
             LogUtil.e(TAG, "get audio encoder mediaCodec is error: " + e.getMessage());
