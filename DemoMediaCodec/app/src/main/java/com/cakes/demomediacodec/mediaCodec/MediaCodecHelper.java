@@ -125,36 +125,39 @@ public class MediaCodecHelper {
         return mDecoder;
     }
 
-    public static MediaCodec getVideoEncoder(Surface surface) {
+    public static MediaCodec getVideoEncoder(String mime, int width, int height, int framerRate) {
         LogUtil.d(TAG, "视频h264编码器() -- 1111");
-        MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, 480, 480);
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, 600 * 1000);
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, 13);
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 60);
+
+        MediaFormat format = MediaFormat.createVideoFormat(mime, height, width);
+        format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar);
+        format.setInteger(MediaFormat.KEY_BIT_RATE, width * height * 5);
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, framerRate);
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
         format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
+
+//        MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, 480, 480);
+//        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+//        format.setInteger(MediaFormat.KEY_BIT_RATE, 600 * 1000);
+//        format.setInteger(MediaFormat.KEY_FRAME_RATE, 13);
+//        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 60);
+//        format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
         //format.setInteger(MediaFormat.KEY_COMPLEXITY, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
-        MediaCodec mediaCodec = null;
+        MediaCodec videoEncoder = null;
         try {
-            LogUtil.d(TAG, "视频h264编码器() -- 创建前");
-//            mediaCodec = MediaCodec.createEncoderByType(videoConfiguration.mime);
-            MediaCodec videoEncoder = MediaCodec.createByCodecName("OMX.MTK.VIDEO.ENCODER.AVC");
-            LogUtil.d(TAG, "视频h264编码器() -- 创建后");
-            videoEncoder.configure(format, surface, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-            LogUtil.d(TAG, "视频h264编码器() -- start前");
-            //videoEncoder.start();
-            LogUtil.d(TAG, "视频h264编码器() -- start后");
+            videoEncoder = MediaCodec.createEncoderByType(mime);
+//            videoEncoder = MediaCodec.createByCodecName("xxx");
+            videoEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (Exception e) {
             e.printStackTrace();
-            if (mediaCodec != null) {
-                mediaCodec.stop();
-                mediaCodec.release();
-                mediaCodec = null;
+            if (videoEncoder != null) {
+                videoEncoder.stop();
+                videoEncoder.release();
+                videoEncoder = null;
             }
         }
 
-        LogUtil.d(TAG, "视频h264编码器() -- 结束");
-        return null;
+        return videoEncoder;
     }
 
 

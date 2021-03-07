@@ -1,5 +1,6 @@
 package com.cakes.demomediacodec.camera;
 
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
@@ -7,15 +8,14 @@ import com.cakes.utils.LogUtil;
 
 import java.io.IOException;
 
-public class CameraHelpers {
+public class CameraHelper {
 
-    private final String TAG = "CameraHelpers";
+    private final String TAG = "CameraHelper";
 
     private Camera.PreviewCallback previewCallback;
     private Camera camera;
-    private boolean isCanTakePicture = false;
 
-    public CameraHelpers(Camera.PreviewCallback previewCallback) {
+    public CameraHelper(Camera.PreviewCallback previewCallback) {
         this.previewCallback = previewCallback;
     }
 
@@ -38,39 +38,38 @@ public class CameraHelpers {
         }
     }
 
-    public void startPreview(SurfaceHolder holder) {
+    public void startPreview(SurfaceTexture surfaceTexture) {
+        if (null == camera) {
+            return;
+        }
         try {
-//            camera.setPreviewTexture(surface);
-            camera.setPreviewDisplay(holder);
+            camera.setPreviewTexture(surfaceTexture);
             camera.setPreviewCallback(previewCallback);
-
             camera.startPreview();
-//            isCanTakePicture = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public void startPreview(SurfaceHolder holder) {
+        if (null == camera) {
+            return;
+        }
+        try {
+            camera.setPreviewDisplay(holder);
+            camera.setPreviewCallback(previewCallback);
+            camera.startPreview();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void restartPreview() {
         camera.stopPreview();
         camera.startPreview();
     }
 
-
-    public void takePicture(Camera.PictureCallback mPictureCallback) {
-        if (isCanTakePicture && null != camera) {
-            camera.takePicture(new Camera.ShutterCallback() {
-                @Override
-                public void onShutter() {
-                    LogUtil.i(TAG, "takePicture() --- start");
-                }
-            }, null, mPictureCallback);
-        }
-    }
-
     public void release() {
-        isCanTakePicture = false;
         if (null == camera) {
             return;
         }

@@ -14,18 +14,13 @@ import android.widget.Toast;
 
 import com.cakes.demomediacodec.R;
 import com.cakes.demomediacodec.camera.CameraConfiguration;
-import com.cakes.demomediacodec.camera.CameraHelpers;
+import com.cakes.demomediacodec.camera.CameraHelper;
 import com.cakes.demomediacodec.test3.VideoHardEncoder;
 import com.cakes.demomediacodec.test4.VideoDecodeThread;
 import com.cakes.demomediacodec.test4.VideoHardDecoder;
 import com.cakes.demomediacodec.test4.MediaCodecUtil;
 import com.cakes.utils.LogUtil;
 
-/**
- * 使用旧的Camera API
- * https://github.com/sszhangpengfei/MediaCodecEncodeH264
- * https://blog.csdn.net/a512337862/article/details/72629779
- */
 public class VideoChatActivity extends AppCompatActivity {
 
     private final String TAG = "VideoChatActivity";
@@ -33,7 +28,7 @@ public class VideoChatActivity extends AppCompatActivity {
     private Context context;
     private SurfaceView surfaceViewCamera;
     private Button btnEncode;
-    private CameraHelpers cameraHelpers;
+    private CameraHelper cameraHelper;
     private VideoHardEncoder videoHardEncoder;
 
     private SurfaceView surfaceViewPlayer;
@@ -93,12 +88,12 @@ public class VideoChatActivity extends AppCompatActivity {
     private SurfaceHolder.Callback surfaceCallbackOfCamera = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            cameraHelpers = new CameraHelpers(previewCallback);
-            if (cameraHelpers.initCameraDevice()) {
+            cameraHelper = new CameraHelper(previewCallback);
+            if (cameraHelper.initCameraDevice()) {
                 videoHardEncoder = new VideoHardEncoder(CameraConfiguration.DEFAULT_PICTURE_WIDTH,
-                        CameraConfiguration.DEFAULT_PREVIEW_HEIGHT, CameraConfiguration.DEFAULT_PREVIEW_FPS_MIN, 1);
+                        CameraConfiguration.DEFAULT_PREVIEW_HEIGHT, CameraConfiguration.DEFAULT_PREVIEW_FPS_MIN);
 
-                cameraHelpers.startPreview(holder);
+                cameraHelper.startPreview(holder);
 
             } else {
                 showToast("open Camera failed");

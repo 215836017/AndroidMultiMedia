@@ -34,8 +34,4 @@ public class CameraConfiguration {
 
     }
 
-    public static void switchFlash(Camera.Parameters parameters, String flashMode) {
-        parameters.setFlashMode(flashMode);
-    }
-
 }

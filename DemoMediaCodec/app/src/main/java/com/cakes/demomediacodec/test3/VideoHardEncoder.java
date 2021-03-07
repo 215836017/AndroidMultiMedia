@@ -1,19 +1,12 @@
 package com.cakes.demomediacodec.test3;
 
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
-import android.os.Environment;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.cakes.demomediacodec.mediaCodec.MediaCodecHelper;
+
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
-
-import static android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
-import static android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME;
 
 public class VideoHardEncoder {
     private final static String TAG = "VideoHardEncoder";
@@ -21,84 +14,48 @@ public class VideoHardEncoder {
     private int TIMEOUT_USEC = 12000;
 
     private MediaCodec mediaCodec;
-    int m_width;
-    int m_height;
-    int m_framerate;
+    int mWidth;
+    int mHeight;
+    int mFrameRate;
     public boolean isRunning = false;
-    public byte[] configbyte;
-    int count = 0;
 
     private static int YUV_QUEUE_SIZE = 10;
     //待解码视频缓冲队列，静态成员！
     private ArrayBlockingQueue<byte[]> YUVQueue = new ArrayBlockingQueue<byte[]>(YUV_QUEUE_SIZE);
 
-    private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test1.h264";
-    //    private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testDecode.h264";
-    private BufferedOutputStream outputStream;
+    private OnVideoEncodeListener onVideoEncodeListener;
 
-    private final String mime = "video/avc";
+    public VideoHardEncoder(int width, int height, int frameRate) {
 
-    public VideoHardEncoder(int width, int height, int framerate, int bitrate) {
+        mWidth = width;
+        mHeight = height;
+        mFrameRate = frameRate;
 
-        m_width = width;
-        m_height = height;
-        m_framerate = framerate;
-
-        /*
-         MediaFormat format = MediaFormat.createVideoFormat(videoConfiguration.mime, size.width, size.height);
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, videoConfiguration.bps);
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, videoConfiguration.fps);
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, videoConfiguration.ifi);
-        format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
-
-       //    mediaCodec = MediaCodec.createEncoderByType(videoConfiguration.mime);
-            mediaCodec = MediaCodec.createByCodecName("OMX.MTK.VIDEO.ENCODER.AVC");
-             mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-         */
-
-        MediaFormat mediaFormat = MediaFormat.createVideoFormat(mime, height, width);
-        mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar);
-        mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, width * height * 5);
-        mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, m_framerate);
-        mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
-        try {
-            mediaCodec = MediaCodec.createEncoderByType(mime);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //配置编码器参数
-        mediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-        //启动编码器
-        mediaCodec.start();
-        //创建保存编码后数据的文件
-        createFile();
+        initMediaCodec();
+        initEncodeListener();
     }
 
-    private void createFile() {
-        File file = new File(path);
-        if (file.exists()) {
-            file.delete();
+    private void initMediaCodec() {
+        mediaCodec = MediaCodecHelper.getVideoEncoder(MediaFormat.MIMETYPE_VIDEO_AVC,
+                mWidth, mHeight, mFrameRate);
+        if (null != mediaCodec) {
+            //启动编码器
+            mediaCodec.start();
         }
-        try {
-            outputStream = new BufferedOutputStream(new FileOutputStream(file));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    }
+
+    private void initEncodeListener() {
+        onVideoEncodeListener = new VideoEncodeResult();
     }
 
     public void inputYUVToQueue(byte[] data) {
-//        if (YUVQueue.size() > YUV_QUEUE_SIZE) {
-//            YUVQueue.poll();
-//        }
-//        YUVQueue.offer(data);
-
-        try {
-            outputStream.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!isRunning) {
+            return;
         }
+        if (YUVQueue.size() > YUV_QUEUE_SIZE) {
+            YUVQueue.poll();
+        }
+        YUVQueue.offer(data);
     }
 
     private void stopEncoder() {
@@ -112,15 +69,8 @@ public class VideoHardEncoder {
 
     public void stopThread() {
         isRunning = false;
-        try {
-            stopEncoder();
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        stopEncoder();
     }
-
 
     public void startEncoderThread() {
         Thread EncoderThread = new Thread(new Runnable() {
@@ -132,15 +82,17 @@ public class VideoHardEncoder {
                 long pts = 0;
                 long generateIndex = 0;
                 byte[] rotatedData = null;
-                byte[] yuv420sp = new byte[m_width * m_height * 3 / 2];
+                byte[] yuv420sp = new byte[mWidth * mHeight * 3 / 2];
+                ByteBuffer outputBuffer = null;
+                MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
                 while (isRunning) {
                     if (YUVQueue.size() > 0) {
-                        //从缓冲队列中取出一帧
+                        // 从缓冲队列中取出一帧
                         input = YUVQueue.poll();
 
-                        //把待编码的视频帧转换为YUV420格式
-                        NV21ToNV12(input, yuv420sp, m_width, m_height);
-                        rotatedData = rotateNV290(yuv420sp, m_width, m_height);
+                        // 把待编码的视频帧转换为YUV420格式
+                        NV21ToNV12(input, yuv420sp, mWidth, mHeight);
+                        rotatedData = RotateUtil.rotateNV290(yuv420sp, mWidth, mHeight);
                     }
                     if (rotatedData != null) {
                         try {
@@ -160,31 +112,17 @@ public class VideoHardEncoder {
                                 generateIndex += 1;
                             }
 
-                            MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
                             int outputBufferIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, TIMEOUT_USEC);
                             while (outputBufferIndex >= 0) {
                                 //Log.i("VideoHardEncoder", "Get H264 Buffer Success! flag = "+bufferInfo.flags+",pts = "+bufferInfo.presentationTimeUs+"");
-                                ByteBuffer outputBuffer = outputBuffers[outputBufferIndex];
-                                byte[] outData = new byte[bufferInfo.size];
-                                outputBuffer.get(outData);
+                                outputBuffer = outputBuffers[outputBufferIndex];
+//                                byte[] outData = new byte[bufferInfo.size];
+//                                outputBuffer.get(outData);
 
-                             //   outputStream.write(outData, 0, outData.length);
-
-//                                if (bufferInfo.flags == BUFFER_FLAG_CODEC_CONFIG) {
-//                                    configbyte = new byte[bufferInfo.size];
-//                                    configbyte = outData;
-//                                } else if (bufferInfo.flags == BUFFER_FLAG_KEY_FRAME) {
-//                                    byte[] keyframe = new byte[bufferInfo.size + configbyte.length];
-//                                    System.arraycopy(configbyte, 0, keyframe, 0, configbyte.length);
-//                                    //把编码后的视频帧从编码器输出缓冲区中拷贝出来
-//                                    System.arraycopy(outData, 0, keyframe, configbyte.length, outData.length);
-//
-//                                    outputStream.write(keyframe, 0, keyframe.length);
-//                                } else {
-//                                    //写到文件中
-//                                    outputStream.write(outData, 0, outData.length);
-//                                }
-
+                                if (null != onVideoEncodeListener) {
+                                    onVideoEncodeListener.onVideoEncode(outputBuffer, bufferInfo);
+                                }
+                                //   outputStream.write(outData, 0, outData.length);
                                 mediaCodec.releaseOutputBuffer(outputBufferIndex, false);
                                 outputBufferIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, TIMEOUT_USEC);
                             }
@@ -203,11 +141,10 @@ public class VideoHardEncoder {
             }
         });
         EncoderThread.start();
-
     }
 
     /**
-     * 因为从MediaCodec不支持NV21的数据编码，所以需要先讲NV21的数据转码为NV12
+     * 因为从MediaCodec不支持NV21的数据编码，所以需要先把NV21的数据转码为NV12
      */
     private void NV21ToNV12(byte[] nv21, byte[] nv12, int width, int height) {
         if (nv21 == null || nv12 == null) return;
@@ -226,41 +163,9 @@ public class VideoHardEncoder {
     }
 
     /**
-     * 此处为顺时针旋转旋转90度
-     *
-     * @param data        旋转前的数据
-     * @param imageWidth  旋转前数据的宽
-     * @param imageHeight 旋转前数据的高
-     * @return 旋转后的数据
-     */
-    private byte[] rotateNV290(byte[] data, int imageWidth, int imageHeight) {
-        byte[] yuv = new byte[imageWidth * imageHeight * 3 / 2];
-        // Rotate the Y luma
-        int i = 0;
-        for (int x = 0; x < imageWidth; x++) {
-            for (int y = imageHeight - 1; y >= 0; y--) {
-                yuv[i] = data[y * imageWidth + x];
-                i++;
-            }
-        }
-        // Rotate the U and V color components
-        i = imageWidth * imageHeight * 3 / 2 - 1;
-        for (int x = imageWidth - 1; x > 0; x = x - 2) {
-            for (int y = 0; y < imageHeight / 2; y++) {
-                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
-                i--;
-                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x - 1)];
-                i--;
-            }
-        }
-        return yuv;
-    }
-
-
-    /**
      * Generates the presentation time for frame N, in microseconds.
      */
     private long computePresentationTime(long frameIndex) {
-        return 132 + frameIndex * 1000000 / m_framerate;
+        return 132 + frameIndex * 1000000 / mFrameRate;
     }
 }
