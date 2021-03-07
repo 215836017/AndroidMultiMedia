@@ -22,6 +22,7 @@ public class AudioEncodeResult implements OnAudioEncodeListener {
     public static final String TEST_DIR_PATH = Environment.getExternalStorageDirectory()
             + File.separator + "testCodec" + File.separator;
     public static final String FILE_AAC = "test.aac";
+    public static final String FILE_MP3 = "qhc.mp3";  // 测试文件见res/raw/qhc.mp3,这里测试放在了sdcard中
     public static final String FILE_PCM = "test.pcm";
 
     private FileOutputStream fileOutputStream;

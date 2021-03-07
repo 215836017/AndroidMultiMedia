@@ -19,7 +19,7 @@ public class AudioHardDecoder {
     private ByteBuffer outputBuffer = null;
     private int inputBufferIndex;
     private int outputBufferIndex;
-    private MediaCodec.BufferInfo bufferInfo;
+    private MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
 
     public AudioHardDecoder() {
     }

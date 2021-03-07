@@ -2,6 +2,8 @@ package com.cakes.demomediacodec.test2;
 
 import android.media.MediaCodec;
 
+import com.cakes.utils.LogUtil;
+
 import java.nio.ByteBuffer;
 
 public class AudioDecodeResult implements OnAudioDecodeListener {
@@ -17,6 +19,7 @@ public class AudioDecodeResult implements OnAudioDecodeListener {
 
     @Override
     public void onAudioDecode(ByteBuffer buffer, MediaCodec.BufferInfo bufferInfo) {
+        LogUtil.i(TAG, "onAudioDecode() -- 音频解码数据回调");
         if (null == buffer) {
             return;
         }

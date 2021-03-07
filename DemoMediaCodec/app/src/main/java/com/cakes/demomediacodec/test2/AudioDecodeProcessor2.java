@@ -29,7 +29,8 @@ public class AudioDecodeProcessor2 extends Thread {
 
     public AudioDecodeProcessor2() {
 
-        filePath = AudioEncodeResult.TEST_DIR_PATH + AudioEncodeResult.FILE_AAC;
+//        filePath = AudioEncodeResult.TEST_DIR_PATH + AudioEncodeResult.FILE_AAC;
+        filePath = AudioEncodeResult.TEST_DIR_PATH + AudioEncodeResult.FILE_MP3;
         LogUtil.i(TAG, "AudioDecodeProcessor() -- filePath = " + filePath);
 
     }
@@ -66,7 +67,9 @@ public class AudioDecodeProcessor2 extends Thread {
 
         LogUtil.d(TAG, "start to decode aac file..");
         initAudioDecoder();
+        long timeBegin = System.currentTimeMillis();
         audioHardDecoder2.startDecoderAacFile();
+        LogUtil.d(TAG, "run() -- decode time use = " + (System.currentTimeMillis() - timeBegin));
     }
 
 }
