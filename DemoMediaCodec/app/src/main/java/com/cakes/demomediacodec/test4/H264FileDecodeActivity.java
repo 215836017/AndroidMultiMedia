@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec.test;
+package com.cakes.demomediacodec.test4;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,7 +18,7 @@ public class H264FileDecodeActivity extends AppCompatActivity {
     //解码器
     private MediaCodecUtil codecUtil;
     //读取文件解码线程
-    private MediaCodecThread thread;
+    private VideoDecodeThread thread;
     //文件路径
     private String path = Environment.getExternalStorageDirectory().toString() + "/SONA/test.h264";
 
@@ -46,7 +46,7 @@ public class H264FileDecodeActivity extends AppCompatActivity {
                 }
                 if (thread == null) {
                     //解码线程第一次初始化
-                    thread = new MediaCodecThread(codecUtil, path);
+                    thread = new VideoDecodeThread(codecUtil, path);
                 }
             }
 

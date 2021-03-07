@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec.test;
+package com.cakes.demomediacodec.test4;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -9,10 +9,6 @@ import com.cakes.utils.LogUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-/**
- * Created by ZhangHao on 2016/8/5.
- * 用于硬件解码(MediaCodec)H264的工具类
- */
 public class MediaCodecUtil {
     //自定义的log打印，可以无视
 

@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec.test;
+package com.cakes.demomediacodec.test4;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -18,12 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-
 /*
 https://blog.csdn.net/true100/article/details/53992939/?utm_medium=distribute.pc_relevant.none-task-blog-title-1&spm=1001.2101.3001.4242
  */
-public class AvcDecoder {
-    private final String TAG = "AvcDecoder";
+public class VideoHardDecoder {
+    private final String TAG = "VideoHardDecoder";
 
     private int width = 640;
     private int height = 480;
@@ -31,7 +30,7 @@ public class AvcDecoder {
 
     private MediaCodec mediaCodec = null;
 
-    public AvcDecoder(Surface surface) {
+    public VideoHardDecoder(Surface surface) {
         prepareVideoEncoder(surface);
     }
 

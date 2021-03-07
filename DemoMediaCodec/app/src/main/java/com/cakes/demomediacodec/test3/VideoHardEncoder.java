@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec.test;
+package com.cakes.demomediacodec.test3;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -15,8 +15,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import static android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
 import static android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME;
 
-public class AvcEncoder {
-    private final static String TAG = "AvcEncoder";
+public class VideoHardEncoder {
+    private final static String TAG = "VideoHardEncoder";
 
     private int TIMEOUT_USEC = 12000;
 
@@ -38,7 +38,7 @@ public class AvcEncoder {
 
     private final String mime = "video/avc";
 
-    public AvcEncoder(int width, int height, int framerate, int bitrate) {
+    public VideoHardEncoder(int width, int height, int framerate, int bitrate) {
 
         m_width = width;
         m_height = height;
@@ -163,7 +163,7 @@ public class AvcEncoder {
                             MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
                             int outputBufferIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, TIMEOUT_USEC);
                             while (outputBufferIndex >= 0) {
-                                //Log.i("AvcEncoder", "Get H264 Buffer Success! flag = "+bufferInfo.flags+",pts = "+bufferInfo.presentationTimeUs+"");
+                                //Log.i("VideoHardEncoder", "Get H264 Buffer Success! flag = "+bufferInfo.flags+",pts = "+bufferInfo.presentationTimeUs+"");
                                 ByteBuffer outputBuffer = outputBuffers[outputBufferIndex];
                                 byte[] outData = new byte[bufferInfo.size];
                                 outputBuffer.get(outData);

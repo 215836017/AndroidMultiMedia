@@ -1,4 +1,4 @@
-package com.cakes.demomediacodec.test;
+package com.cakes.demomediacodec.test4;
 
 import com.cakes.utils.LogUtil;
 
@@ -11,9 +11,9 @@ import java.util.Arrays;
  * 读取 H264文件送入解码器解码线程
  */
 
-public class MediaCodecThread extends Thread {
+public class VideoDecodeThread extends Thread {
 
-    private final String TAG = "MediaCodecThread";
+    private final String TAG = "VideoDecodeThread";
     //解码器
     private MediaCodecUtil util;
     //文件路径
@@ -37,7 +37,7 @@ public class MediaCodecThread extends Thread {
      * @param util 解码 Util
      * @param path 文件路径
      */
-    public MediaCodecThread(MediaCodecUtil util, String path) {
+    public VideoDecodeThread(MediaCodecUtil util, String path) {
         this.util = util;
         this.path = path;
         frameList = new ArrayList<>();

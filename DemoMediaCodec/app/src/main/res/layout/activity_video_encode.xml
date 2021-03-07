@@ -13,9 +13,9 @@
 
     <Button
         android:id="@+id/video_en_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="预览相机并编码"
-        tools:layout_editor_absoluteX="142dp"
-        tools:layout_editor_absoluteY="511dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        tools:text="预览相机并编码" />
 </RelativeLayout>

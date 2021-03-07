@@ -1,6 +1,5 @@
 package com.cakes.demomediacodec.camera;
 
-import android.content.Context;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
@@ -12,13 +11,11 @@ public class CameraHelpers {
 
     private final String TAG = "CameraHelpers";
 
-    private Context context;
     private Camera.PreviewCallback previewCallback;
     private Camera camera;
     private boolean isCanTakePicture = false;
 
-    public CameraHelpers(Context context, Camera.PreviewCallback previewCallback) {
-        this.context = context;
+    public CameraHelpers(Camera.PreviewCallback previewCallback) {
         this.previewCallback = previewCallback;
     }
 

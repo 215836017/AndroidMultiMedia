@@ -15,10 +15,10 @@ import android.widget.Toast;
 import com.cakes.demomediacodec.R;
 import com.cakes.demomediacodec.camera.CameraConfiguration;
 import com.cakes.demomediacodec.camera.CameraHelpers;
-import com.cakes.demomediacodec.test.AvcDecoder;
-import com.cakes.demomediacodec.test.AvcEncoder;
-import com.cakes.demomediacodec.test.MediaCodecThread;
-import com.cakes.demomediacodec.test.MediaCodecUtil;
+import com.cakes.demomediacodec.test3.VideoHardEncoder;
+import com.cakes.demomediacodec.test4.VideoDecodeThread;
+import com.cakes.demomediacodec.test4.VideoHardDecoder;
+import com.cakes.demomediacodec.test4.MediaCodecUtil;
 import com.cakes.utils.LogUtil;
 
 /**
@@ -34,11 +34,11 @@ public class VideoChatActivity extends AppCompatActivity {
     private SurfaceView surfaceViewCamera;
     private Button btnEncode;
     private CameraHelpers cameraHelpers;
-    private AvcEncoder avcEncoder;
+    private VideoHardEncoder videoHardEncoder;
 
     private SurfaceView surfaceViewPlayer;
     private Button btnDecode;
-    private AvcDecoder avcDecoder;
+    private VideoHardDecoder videoHardDecoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,21 +81,21 @@ public class VideoChatActivity extends AppCompatActivity {
             isStartEncode = false;
             btnEncode.setText("开始编码");
 
-            avcEncoder.stopThread();
+            videoHardEncoder.stopThread();
         } else {
             isStartEncode = true;
             btnEncode.setText("正在编码中");
 
-//            avcEncoder.startEncoderThread();
+//            videoHardEncoder.startEncoderThread();
         }
     }
 
     private SurfaceHolder.Callback surfaceCallbackOfCamera = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            cameraHelpers = new CameraHelpers(context, previewCallback);
+            cameraHelpers = new CameraHelpers(previewCallback);
             if (cameraHelpers.initCameraDevice()) {
-                avcEncoder = new AvcEncoder(CameraConfiguration.DEFAULT_PICTURE_WIDTH,
+                videoHardEncoder = new VideoHardEncoder(CameraConfiguration.DEFAULT_PICTURE_WIDTH,
                         CameraConfiguration.DEFAULT_PREVIEW_HEIGHT, CameraConfiguration.DEFAULT_PREVIEW_FPS_MIN, 1);
 
                 cameraHelpers.startPreview(holder);
@@ -121,7 +121,7 @@ public class VideoChatActivity extends AppCompatActivity {
         public void onPreviewFrame(byte[] data, Camera camera) {
             LogUtil.i(TAG, "onPreviewFrame() -- data.length = " + data.length);
             if (isStartEncode) {
-                avcEncoder.inputYUVToQueue(data);
+                videoHardEncoder.inputYUVToQueue(data);
             }
         }
     };
@@ -138,31 +138,30 @@ public class VideoChatActivity extends AppCompatActivity {
             isStartDecode = true;
             btnDecode.setText("正在播放中");
 
-            avcDecoder.startDecodingThread();
+            videoHardDecoder.startDecodingThread();
             if (thread != null) {
                 thread.start();
             }
         }
     }
 
-
     //解码器
     private MediaCodecUtil codecUtil;
     //读取文件解码线程
-    private MediaCodecThread thread;
+    private VideoDecodeThread thread;
     private static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/testDecode.h264";
     private SurfaceHolder.Callback surfaceCallbackOfPlay = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             showToast("解码Surface创建完成");
-//            avcDecoder = new AvcDecoder(holder.getSurface());
+//            videoHardDecoder = new VideoHardDecoder(holder.getSurface());
             if (codecUtil == null) {
                 codecUtil = new MediaCodecUtil(holder);
                 codecUtil.startCodec();
             }
             if (thread == null) {
                 //解码线程第一次初始化
-                thread = new MediaCodecThread(codecUtil, path);
+                thread = new VideoDecodeThread(codecUtil, path);
             }
 
         }
