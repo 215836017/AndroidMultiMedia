@@ -200,7 +200,6 @@ public class MediaCodecHelper {
                 }
             }
         }
-        LogUtil.i(TAG, "chooseCodec() -- 3333333333");
         return null;
     }
 }
